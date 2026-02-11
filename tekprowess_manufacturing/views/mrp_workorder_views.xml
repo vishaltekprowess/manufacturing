@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Work Order Form View -->
+    <record id="view_mrp_workorder_form_inherit" model="ir.ui.view">
+        <field name="name">mrp.workorder.form.inherit</field>
+        <field name="model">mrp.workorder</field>
+        <field name="inherit_id" ref="mrp.mrp_production_workorder_form_view_inherit"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add stat button for quality checks -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_quality_checks" type="object" 
+                        class="oe_stat_button" icon="fa-check-square-o">
+                    <field name="quality_check_count" widget="statinfo" string="Quality Checks"/>
+                </button>
+            </xpath>
+            
+            <!-- Add fields -->
+            <xpath expr="//field[@name='workcenter_id']" position="after">
+                <field name="operator_id"/>
+                <field name="skill_required"/>
+            </xpath>
+            
+            <!-- Add notebook pages -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Instructions" name="instructions">
+                    <group>
+                        <field name="tools_required" placeholder="Tools required for this operation..."/>
+                        <field name="safety_instructions" placeholder="Safety instructions and precautions..."/>
+                    </group>
+                </page>
+                <page string="Performance" name="performance">
+                    <group>
+                        <group>
+                            <field name="actual_cost"/>
+                        </group>
+                        <group>
+                            <field name="efficiency" widget="percentage"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+    
+    <!-- Work Center Form View -->
+    <record id="view_mrp_workcenter_form_inherit" model="ir.ui.view">
+        <field name="name">mrp.workcenter.form.inherit</field>
+        <field name="model">mrp.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_workcenter_view"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add capacity fields -->
+            <xpath expr="//field[@name='costs_hour']" position="after">
+                <field name="capacity"/>
+                <field name="efficiency_rate"/>
+            </xpath>
+            
+            <!-- Add notebook pages -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Maintenance" name="maintenance">
+                    <group>
+                        <group>
+                            <field name="maintenance_schedule"/>
+                            <field name="last_maintenance_date"/>
+                        </group>
+                        <group>
+                            <field name="next_maintenance_date"/>
+                        </group>
+                    </group>
+                </page>
+                <page string="Skills &amp; Location" name="skills">
+                    <group>
+                        <field name="location_id"/>
+                        <field name="skill_requirements" placeholder="Required skills and certifications..."/>
+                    </group>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+    
+</odoo>

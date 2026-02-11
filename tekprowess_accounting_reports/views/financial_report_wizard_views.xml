@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Financial Report Wizard Form View -->
+    <record id="view_financial_report_wizard_form" model="ir.ui.view">
+        <field name="name">financial.report.wizard.form</field>
+        <field name="model">financial.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Financial Report">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="report_type" required="1"/>
+                            <field name="date_from" required="1"/>
+                            <field name="date_to" required="1"/>
+                        </group>
+                        <group>
+                            <field name="comparison"/>
+                            <field name="comparison_type" 
+                                   invisible="comparison == False" 
+                                   required="comparison == True"/>
+                            <field name="all_entries"/>
+                            <field name="unfold_all"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="journal_ids" widget="many2many_tags"/>
+                    </group>
+                    <group invisible="report_type not in ['partner_ledger']">
+                        <field name="partner_type"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button name="generate_report" string="Generate Report" type="object" class="btn-primary"/>
+                    <button name="export_xlsx" string="Export to Excel" type="object" class="btn-secondary"/>
+                    <button name="export_pdf" string="Export to PDF" type="object" class="btn-secondary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Financial Report Wizard Action -->
+    <record id="action_financial_report_wizard" model="ir.actions.act_window">
+        <field name="name">Financial Reports</field>
+        <field name="res_model">financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="account.model_account_account"/>
+    </record>
+</odoo>

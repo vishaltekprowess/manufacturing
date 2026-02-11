@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Manufacturing Order Form View -->
+    <record id="view_mrp_production_form_inherit" model="ir.ui.view">
+        <field name="name">mrp.production.form.inherit</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add buttons in header -->
+            <!-- Add smart buttons -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_quality_checks" type="object" 
+                        class="oe_stat_button" icon="fa-check-square-o">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="quality_check_count"/></span>
+                        <span class="o_stat_text">Quality Checks</span>
+                    </div>
+                </button>
+                <button name="action_view_quality_alerts" type="object" 
+                        class="oe_stat_button" icon="fa-exclamation-triangle">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="quality_alert_count"/></span>
+                        <span class="o_stat_text">Quality Alerts</span>
+                    </div>
+                </button>
+            </xpath>
+            
+            <!-- Add Create Purchase Order button -->
+            <xpath expr="//header/button[@name='button_mark_done']" position="before">
+                <button name="%(tekprowess_manufacturing.action_create_purchase_order_wizard)d" 
+                        type="action" 
+                        string="Create Purchase Order" 
+                        class="btn-secondary"
+                        invisible="state in ['done', 'cancel']"/>
+            </xpath>
+            
+            <!-- Add new fields in form -->
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="production_type"/>
+                <field name="priority" widget="priority"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='bom_id']" position="after">
+                <field name="sale_order_id"/>
+                <field name="customer_id"/>
+            </xpath>
+            
+            <!-- Add notebook page for costing -->
+            <xpath expr="//notebook" position="inside">
+                <!-- <page string="Costing" name="costing">
+                    <group>
+                        <group>
+                            <field name="material_cost"/>
+                            <field name="labor_cost"/>
+                            <field name="overhead_cost"/>
+                        </group>
+                        <group>
+                            <field name="production_cost"/>
+                            <field name="efficiency" widget="percentage"/>
+                        </group>
+                    </group>
+                </page> -->
+                
+                <page string="Scheduling" name="scheduling">
+                    <group>
+                        <group>
+                            <field name="planned_start_date"/>
+                            <field name="planned_end_date"/>
+                            <field name="expected_duration" widget="float_time"/>
+                        </group>
+                        <group>
+                            <field name="actual_start_date"/>
+                            <field name="actual_end_date"/>
+                            <field name="actual_duration" widget="float_time"/>
+                        </group>
+                    </group>
+                </page>
+                
+                <page string="Notes" name="notes">
+                    <group>
+                        <field name="notes" placeholder="Production notes..."/>
+                        <field name="special_instructions" placeholder="Special instructions..."/>
+                    </group>
+                </page>
+            </xpath>
+            
+            <!-- Add fields -->
+            <xpath expr="//field[@name='date_start']" position="attributes">
+                <attribute name="invisible">0</attribute>
+            </xpath>
+            
+        </field>
+    </record>
+    
+    <!-- Manufacturing Order Tree View -->
+    <record id="view_mrp_production_tree_inherit" model="ir.ui.view">
+        <field name="name">mrp.production.tree.inherit</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_tree_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="production_type"/>
+                <field name="customer_id"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Manufacturing Order Search View -->
+    <record id="view_mrp_production_search_inherit" model="ir.ui.view">
+        <field name="name">mrp.production.search.inherit</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.view_mrp_production_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="production_type"/>
+                <field name="customer_id"/>
+                <field name="sale_order_id"/>
+                <filter string="High Priority" name="high_priority" 
+                        domain="[('priority', 'in', ['2', '3'])]"/>
+                <filter string="Make to Order" name="make_to_order" 
+                        domain="[('production_type', '=', 'make_to_order')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Production Type" name="group_production_type" 
+                            context="{'group_by': 'production_type'}"/>
+                    <filter string="Customer" name="group_customer" 
+                            context="{'group_by': 'customer_id'}"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

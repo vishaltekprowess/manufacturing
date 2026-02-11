@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        
+        <!-- Custom Module Category for Tekprowess Manufacturing -->
+        <record id="module_category_tekprowess_manufacturing" model="ir.module.category">
+            <field name="name">Tekprowess Manufacturing</field>
+            <field name="description">Access rights for Tekprowess Manufacturing module</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <!-- Base Group - Not displayed in UI (implied by others) -->
+        <record id="group_manufacturing_base" model="res.groups">
+            <field name="name">Manufacturing Base Access</field>
+            <field name="implied_ids" eval="[(4, ref('mrp.group_mrp_user'))]"/>
+        </record>
+        
+        <!-- Selection Groups - These create the dropdown -->
+        <!-- Level 1: User -->
+        <record id="group_manufacturing_user" model="res.groups">
+            <field name="name">User</field>
+            <field name="category_id" ref="module_category_tekprowess_manufacturing"/>
+            <field name="comment">Basic manufacturing user</field>
+            <field name="implied_ids" eval="[(4, ref('group_manufacturing_base'))]"/>
+        </record>
+        
+        <!-- Level 2: Quality Inspector -->
+        <record id="group_quality_inspector" model="res.groups">
+            <field name="name">Quality Inspector</field>
+            <field name="category_id" ref="module_category_tekprowess_manufacturing"/>
+            <field name="comment">Quality control access</field>
+            <field name="implied_ids" eval="[(4, ref('group_manufacturing_user'))]"/>
+        </record>
+        
+        <!-- Level 3: Production Planner -->
+        <record id="group_production_planner" model="res.groups">
+            <field name="name">Production Planner</field>
+            <field name="category_id" ref="module_category_tekprowess_manufacturing"/>
+            <field name="comment">Production planning access</field>
+            <field name="implied_ids" eval="[(4, ref('group_quality_inspector'))]"/>
+        </record>
+        
+        <!-- Level 4: Administrator -->
+        <record id="group_manufacturing_manager" model="res.groups">
+            <field name="name">Administrator</field>
+            <field name="category_id" ref="module_category_tekprowess_manufacturing"/>
+            <field name="comment">Full manufacturing access</field>
+            <field name="implied_ids" eval="[(4, ref('group_production_planner')), (4, ref('mrp.group_mrp_manager'))]"/>
+        </record>
+        
+    </data>
+</odoo>

@@ -1,0 +1,264 @@
+/* Tekprowess Accounting Reports - Styles */
+
+/* Report Container */
+.o_account_reports_page {
+    padding: 20px;
+    background: #f9f9f9;
+    height: 100%;
+    overflow: auto;
+}
+
+/* Report Table Container */
+.o_account_reports_table_container {
+    overflow-x: auto;
+    width: 100%;
+}
+
+/* Report Table */
+.o_account_reports_table {
+    width: 100%;
+    background: white;
+    border-collapse: collapse;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.o_account_reports_table thead {
+    background: #875a7b;
+    color: white;
+}
+
+.o_account_reports_table thead th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #6d4660;
+    /* Vertical borders for headers */
+    /* border-right: 1px solid rgba(255, 255, 255, 0.2); */
+}
+
+/* Right align all headers except the first one (Account Name) */
+.o_account_reports_table thead th:not(:first-child) {
+    text-align: right;
+}
+
+/* Remove border from last header */
+.o_account_reports_table thead th:last-child {
+    border-right: none;
+}
+
+.o_account_reports_table tbody tr {
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s;
+}
+
+.o_account_reports_table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.o_account_reports_table tbody td {
+    padding: 10px 12px;
+    /* Add vertical borders to distinguish columns */
+    /* border-right: 1px solid #e9ecef; */
+}
+
+.o_account_reports_table tbody td:last-child {
+    border-right: none;
+}
+
+/* Level indentation */
+.o_account_reports_level0 {
+    font-weight: bold;
+    font-size: 1.1em;
+    background: #f0f0f0;
+}
+
+.o_account_reports_level1 {
+    font-weight: 600;
+    padding-left: 20px !important;
+}
+
+.o_account_reports_level2 {
+    padding-left: 40px !important;
+}
+
+.o_account_reports_level3 {
+    padding-left: 60px !important;
+    font-size: 0.95em;
+}
+
+/* Total lines */
+.total {
+    font-weight: bold;
+    background: #f5f5f5;
+    border-top: 2px solid #875a7b;
+}
+
+.o_account_reports_domain_total {
+    font-weight: bold;
+    font-size: 1.05em;
+    background: #875a7b;
+    color: white;
+    border-top: 3px solid #6d4660;
+}
+
+.o_account_reports_domain_total td {
+    padding: 14px 12px !important;
+}
+
+.o_account_reports_domain_total:hover {
+    color: #212529 !important;
+    /* Dark text on hover */
+}
+
+/* Initial Balance */
+.o_account_reports_initial_balance {
+    font-style: italic;
+    color: #6c757d;
+    background: #f8f9fa;
+}
+
+/* Numeric columns */
+.number {
+    text-align: right !important;
+    font-family: 'Courier New', monospace;
+}
+
+/* Negative values */
+.text-danger {
+    color: #dc3545 !important;
+}
+
+/* Unfoldable rows */
+.o_account_reports_unfoldable {
+    cursor: pointer;
+}
+
+.o_account_reports_unfoldable:hover {
+    background-color: #e9ecef;
+}
+
+.o_account_reports_unfoldable::before {
+    content: '▸ ';
+    margin-right: 5px;
+    transition: transform 0.2s;
+}
+
+.o_account_reports_unfolded::before {
+    transform: rotate(90deg);
+    content: '▾ ';
+}
+
+/* Wizard Form */
+.financial_report_wizard_form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.financial_report_wizard_form .o_form_sheet {
+    padding: 24px;
+}
+
+/* Export Buttons */
+.o_account_reports_buttons {
+    margin-bottom: 20px;
+}
+
+.o_account_reports_buttons button {
+    margin-right: 10px;
+}
+
+/* Report Header */
+.o_account_reports_header {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+}
+
+.o_account_reports_header h2 {
+    margin: 0 0 10px 0;
+    color: #875a7b;
+}
+
+.o_account_reports_header .o_report_period {
+    color: #6c757d;
+    font-size: 0.95em;
+}
+
+/* Comparison columns */
+.o_account_reports_comparison_column {
+    background: #f0f7ff;
+}
+
+/* Print styles */
+@media print {
+    .o_account_reports_page {
+        background: white;
+        padding: 0;
+    }
+
+    .o_account_reports_buttons {
+        display: none;
+    }
+
+    .o_account_reports_table {
+        box-shadow: none;
+    }
+
+    .o_account_reports_table tbody tr:hover {
+        background-color: transparent;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .o_account_reports_table {
+        font-size: 0.85em;
+    }
+
+    .o_account_reports_table td,
+    .o_account_reports_table th {
+        padding: 8px;
+    }
+
+    .o_account_reports_level2 {
+        padding-left: 20px !important;
+    }
+
+    .o_account_reports_level3 {
+        padding-left: 30px !important;
+    }
+}
+
+/* Loading spinner */
+.o_account_reports_loading {
+    text-align: center;
+    padding: 40px;
+    color: #875a7b;
+}
+
+.o_account_reports_loading::after {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #875a7b;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* No data message */
+.o_account_reports_no_data {
+    text-align: center;
+    padding: 60px;
+    color: #6c757d;
+    font-style: italic;
+}

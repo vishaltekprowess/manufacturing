@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Report Actions -->
+    <record id="action_report_production_order" model="ir.actions.report">
+        <field name="name">Production Order</field>
+        <field name="model">mrp.production</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tekprowess_manufacturing.report_production_order_document</field>
+        <field name="report_file">tekprowess_manufacturing.report_production_order_document</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+    <record id="action_report_bom_structure" model="ir.actions.report">
+        <field name="name">BoM Structure</field>
+        <field name="model">mrp.bom</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tekprowess_manufacturing.report_bom_structure_document</field>
+        <field name="report_file">tekprowess_manufacturing.report_bom_structure_document</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_bom"/>
+        <field name="binding_type">report</field>
+    </record>
+    
+</odoo>

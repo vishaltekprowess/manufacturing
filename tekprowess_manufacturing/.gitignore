@@ -1,0 +1,12 @@
+*.pyc
+*.pyo
+__pycache__/
+*.log
+*.pot
+*.mo
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

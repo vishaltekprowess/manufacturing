@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Material Requirement Wizard Form -->
+    <record id="view_material_requirement_wizard_form" model="ir.ui.view">
+        <field name="name">material.requirement.wizard.form</field>
+        <field name="model">material.requirement.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Material Requirements">
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                    </group>
+                    <group>
+                        <field name="include_sales"/>
+                        <field name="include_manufacturing"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="product_ids" widget="many2many_tags" 
+                           placeholder="Leave empty to analyze all products"/>
+                </group>
+                <footer>
+                    <button name="action_generate_requirements" string="Generate" 
+                            type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Material Requirement Wizard Action -->
+    <record id="action_material_requirement_wizard" model="ir.actions.act_window">
+        <field name="name">Generate Material Requirements</field>
+        <field name="res_model">material.requirement.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+    
+    <!-- Material Requirement Form View -->
+    <record id="view_material_requirement_form" model="ir.ui.view">
+        <field name="name">manufacturing.material.requirement.form</field>
+        <field name="model">manufacturing.material.requirement</field>
+        <field name="arch" type="xml">
+            <form string="Material Requirement">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group>
+                            <field name="product_id"/>
+                            <field name="required_quantity"/>
+                            <field name="available_quantity"/>
+                            <field name="shortage_quantity" 
+                                   decoration-danger="shortage_quantity > 0"/>
+                        </group>
+                        <group>
+                            <field name="required_date"/>
+                            <field name="procurement_type"/>
+                            <field name="production_id"/>
+                            <field name="sale_order_id"/>
+                            <field name="purchase_order_id"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Material Requirement Tree View -->
+    <record id="view_material_requirement_tree" model="ir.ui.view">
+        <field name="name">manufacturing.material.requirement.tree</field>
+        <field name="model">manufacturing.material.requirement</field>
+        <field name="arch" type="xml">
+            <list string="Material Requirements" decoration-danger="shortage_quantity > 0">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="required_quantity"/>
+                <field name="available_quantity"/>
+                <field name="shortage_quantity"/>
+                <field name="required_date"/>
+                <field name="procurement_type"/>
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+    </record>
+    
+    <!-- Material Requirement Action -->
+    <record id="action_material_requirement" model="ir.actions.act_window">
+        <field name="name">Material Requirements</field>
+        <field name="res_model">manufacturing.material.requirement</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No material requirements found
+            </p>
+            <p>
+                Use the wizard to generate material requirements based on sales and manufacturing orders.
+            </p>
+        </field>
+    </record>
+    
+</odoo>

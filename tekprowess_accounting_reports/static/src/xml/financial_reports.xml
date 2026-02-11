@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Financial Report Main View Template -->
+    <t t-name="tekprowess_accounting_reports.FinancialReportView" owl="1">
+        <div class="o_account_reports_page">
+            <!-- Report Header -->
+            <div class="o_account_reports_header">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h2 t-esc="state.reportName"/>
+                        <div class="o_report_period" t-if="state.options.date_from and state.options.date_to">
+                            <strong>Period:</strong> 
+                            <t t-esc="state.options.date_from"/> to <t t-esc="state.options.date_to"/>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="o_account_reports_buttons">
+                            <button class="btn btn-secondary" t-on-click="exportToExcel">
+                                <i class="fa fa-file-excel-o"/> Export to Excel
+                            </button>
+                            <button class="btn btn-secondary" t-on-click="exportToPDF">
+                                <i class="fa fa-file-pdf-o"/> Export to PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div t-if="state.loading" class="o_account_reports_loading">
+                <p>Loading report...</p>
+            </div>
+
+            <!-- No Data State -->
+            <div t-elif="!state.lines or state.lines.length === 0" class="o_account_reports_no_data">
+                <p>No data available for the selected period.</p>
+            </div>
+
+            <!-- Report Table -->
+            <div t-else="" class="o_account_reports_table_container">
+                <table class="table o_account_reports_table">
+                    <thead>
+                        <tr>
+                            <th t-foreach="state.columns" t-as="column" t-key="column_index">
+                                <t t-esc="column.name"/>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="state.lines" t-as="line" t-key="line.id or line_index">
+                            <tr t-if="isLineVisible(line, line_index)" 
+                                t-att-class="getLineClass(line)"
+                                t-on-click="() => line.unfoldable ? this.toggleUnfold(line.id) : this.drillDown(line)">
+                                
+                                <!-- First column (account/description) -->
+                                <td t-att-style="'padding-left: ' + ((line.level || 0) * 20) + 'px;'">
+                                    <span t-if="line.unfoldable and !line.unfolded">▸</span>
+                                    <span t-if="line.unfoldable and line.unfolded">▾</span>
+                                    <t t-esc="line.name"/>
+                                </td>
+                                
+                                <!-- Data columns -->
+                                <td t-foreach="line.columns or []" 
+                                    t-as="column" 
+                                    t-key="'col_' + column_index"
+                                    class="number">
+                                    <t t-esc="column.name"/>
+                                </td>
+                            </tr>
+                        </t>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </t>
+
+</templates>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- BoM Structure Report Template -->
+    <template id="report_bom_structure_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <h2>
+                            <span>Bill of Materials: </span>
+                            <span t-field="o.product_tmpl_id"/>
+                        </h2>
+                        
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Reference:</strong>
+                                <span t-field="o.code"/>
+                                <br/>
+                                <strong>Product:</strong>
+                                <span t-field="o.product_id"/>
+                                <br/>
+                                <strong>Quantity:</strong>
+                                <span t-field="o.product_qty"/>
+                                <span t-field="o.product_uom_id.name"/>
+                                <br/>
+                                <strong>Category:</strong>
+                                <span t-field="o.bom_category"/>
+                            </div>
+                            <div class="col-6">
+                                <strong>Type:</strong>
+                                <span t-field="o.type"/>
+                                <br/>
+                                <strong>Revision:</strong>
+                                <span t-field="o.revision"/>
+                                <br/>
+                                <strong>Revision Date:</strong>
+                                <span t-field="o.revision_date"/>
+                                <br/>
+                                <t t-if="o.approved">
+                                    <strong>Approved:</strong> Yes
+                                    <br/>
+                                    <strong>Approved By:</strong>
+                                    <span t-field="o.approved_by"/>
+                                </t>
+                            </div>
+                        </div>
+                        
+                        <!-- Components -->
+                        <h3>Components</h3>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-end">Quantity</th>
+                                    <th>UoM</th>
+                                    <th>Critical</th>
+                                    <th class="text-end">Unit Cost</th>
+                                    <th class="text-end">Total Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.bom_line_ids" t-as="line">
+                                    <td><span t-field="line.product_id"/></td>
+                                    <td class="text-end"><span t-field="line.product_qty"/></td>
+                                    <td><span t-field="line.product_uom_id"/></td>
+                                    <td>
+                                        <t t-if="line.is_critical">
+                                            <span class="badge bg-danger">Critical</span>
+                                        </t>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-esc="line.product_id.standard_price" 
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <span t-esc="line.product_id.standard_price * line.product_qty" 
+                                              t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5" class="text-end"><strong>Material Cost:</strong></td>
+                                    <td class="text-end">
+                                        <strong>
+                                            <span t-field="o.material_cost" 
+                                                  t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <tr t-if="o.scrap_percentage > 0">
+                                    <td colspan="5" class="text-end">
+                                        <strong>Scrap (<span t-field="o.scrap_percentage"/>%):</strong>
+                                    </td>
+                                    <td class="text-end">
+                                        <strong>
+                                            <span t-esc="o.material_cost * o.scrap_percentage / 100" 
+                                                  t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="text-end"><strong>Estimated Cost:</strong></td>
+                                    <td class="text-end">
+                                        <strong>
+                                            <span t-field="o.estimated_cost" 
+                                                  t-options="{'widget': 'monetary', 'display_currency': o.company_id.currency_id}"/>
+                                        </strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                        
+                        <!-- Operations -->
+                        <t t-if="o.operation_ids">
+                            <h3>Operations</h3>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Sequence</th>
+                                        <th>Operation</th>
+                                        <th>Work Center</th>
+                                        <th class="text-end">Duration (min)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="o.operation_ids" t-as="op">
+                                        <td><span t-field="op.sequence"/></td>
+                                        <td><span t-field="op.name"/></td>
+                                        <td><span t-field="op.workcenter_id"/></td>
+                                        <td class="text-end"><span t-field="op.time_cycle"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+                        
+                        <!-- Notes -->
+                        <t t-if="o.notes">
+                            <h3>Technical Notes</h3>
+                            <p><span t-field="o.notes"/></p>
+                        </t>
+                        
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+</odoo>

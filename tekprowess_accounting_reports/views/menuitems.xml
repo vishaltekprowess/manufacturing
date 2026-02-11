@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu: Financial Reports -->
+    <menuitem id="menu_tekprowess_financial_reports_root"
+              name="Financial Reports"
+              parent="account.menu_finance_reports"
+              sequence="10"/>
+
+    <!-- Wizard Menu Item -->
+    <menuitem id="menu_financial_report_wizard"
+              name="Generate Report"
+              parent="menu_tekprowess_financial_reports_root"
+              action="action_financial_report_wizard"
+              sequence="1"/>
+
+    <!-- Separator -->
+    <menuitem id="menu_financial_reports_separator"
+              name="─────────────────"
+              parent="menu_tekprowess_financial_reports_root"
+              sequence="5"/>
+
+    <!-- Individual Report Menus -->
+    
+    <!-- Profit & Loss -->
+    <record id="action_profit_loss_report" model="ir.actions.act_window">
+        <field name="name">Profit &amp; Loss</field>
+        <field name="res_model">financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'profit_loss'}</field>
+    </record>
+    
+    <menuitem id="menu_profit_loss_report"
+              name="Profit &amp; Loss"
+              parent="menu_tekprowess_financial_reports_root"
+              action="action_profit_loss_report"
+              sequence="10"/>
+
+    <!-- Balance Sheet -->
+    <record id="action_balance_sheet_report" model="ir.actions.act_window">
+        <field name="name">Balance Sheet</field>
+        <field name="res_model">financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'balance_sheet'}</field>
+    </record>
+    
+    <menuitem id="menu_balance_sheet_report"
+              name="Balance Sheet"
+              parent="menu_tekprowess_financial_reports_root"
+              action="action_balance_sheet_report"
+              sequence="20"/>
+
+    <!-- Cash Flow Statement -->
+    <record id="action_cash_flow_report" model="ir.actions.act_window">
+        <field name="name">Cash Flow Statement</field>
+        <field name="res_model">financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'cash_flow'}</field>
+    </record>
+    
+    <menuitem id="menu_cash_flow_report"
+              name="Cash Flow Statement"
+              parent="menu_tekprowess_financial_reports_root"
+              action="action_cash_flow_report"
+              sequence="30"/>
+
+    <!-- Separator -->
+    <menuitem id="menu_financial_reports_separator2"
+              name="─────────────────"
+              parent="menu_tekprowess_financial_reports_root"
+              sequence="35"/>
+
+    <!-- Trial Balance -->
+    <record id="action_trial_balance_report" model="ir.actions.act_window">
+        <field name="name">Trial Balance</field>
+        <field name="res_model">financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'trial_balance'}</field>
+    </record>
+    
+    <menuitem id="menu_trial_balance_report"
+              name="Trial Balance"
+              parent="menu_tekprowess_financial_reports_root"
+              action="action_trial_balance_report"
+              sequence="40"/>
+
+    <!-- General Ledger -->
+    <record id="action_general_ledger_report" model="ir.actions.act_window">
+        <field name="name">General Ledger</field>
+        <field name="res_model">financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'general_ledger'}</field>
+    </record>
+    
+    <menuitem id="menu_general_ledger_report"
+              name="General Ledger"
+              parent="menu_tekprowess_financial_reports_root"
+              action="action_general_ledger_report"
+              sequence="50"/>
+
+    <!-- Partner Ledger -->
+    <record id="action_partner_ledger_report" model="ir.actions.act_window">
+        <field name="name">Partner Ledger</field>
+        <field name="res_model">financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'partner_ledger'}</field>
+    </record>
+    
+    <menuitem id="menu_partner_ledger_report"
+              name="Partner Ledger"
+              parent="menu_tekprowess_financial_reports_root"
+              action="action_partner_ledger_report"
+              sequence="60"/>
+
+    <!-- Separator -->
+    <menuitem id="menu_financial_reports_separator3"
+              name="─────────────────"
+              parent="menu_tekprowess_financial_reports_root"
+              sequence="65"/>
+
+    <!-- Aged Receivable -->
+    <record id="action_aged_receivable_report" model="ir.actions.act_window">
+        <field name="name">Aged Receivable</field>
+        <field name="res_model">financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'aged_receivable'}</field>
+    </record>
+    
+    <menuitem id="menu_aged_receivable_report"
+              name="Aged Receivable"
+              parent="menu_tekprowess_financial_reports_root"
+              action="action_aged_receivable_report"
+              sequence="70"/>
+
+    <!-- Aged Payable -->
+    <record id="action_aged_payable_report" model="ir.actions.act_window">
+        <field name="name">Aged Payable</field>
+        <field name="res_model">financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'aged_payable'}</field>
+    </record>
+    
+    <menuitem id="menu_aged_payable_report"
+              name="Aged Payable"
+              parent="menu_tekprowess_financial_reports_root"
+              action="action_aged_payable_report"
+              sequence="80"/>
+
+    <!-- Separator -->
+    <menuitem id="menu_financial_reports_separator4"
+              name="─────────────────"
+              parent="menu_tekprowess_financial_reports_root"
+              sequence="85"/>
+
+    <!-- Tax Report -->
+    <record id="action_tax_report" model="ir.actions.act_window">
+        <field name="name">Tax Report</field>
+        <field name="res_model">financial.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_report_type': 'tax_report'}</field>
+    </record>
+    
+    <menuitem id="menu_tax_report"
+              name="Tax Report"
+              parent="menu_tekprowess_financial_reports_root"
+              action="action_tax_report"
+              sequence="90"/>
+
+</odoo>

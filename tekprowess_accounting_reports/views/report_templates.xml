@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Base Report Template -->
+    <template id="report_financial_base">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="page" style="padding-top: 20px;">
+                    <div class="row">
+                        <div class="col-12">
+                            <h2 t-esc="report_name"/>
+                            <p>
+                                <strong>Period:</strong> 
+                                <span t-esc="date_from"/> to <span t-esc="date_to"/>
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th t-foreach="columns" t-as="col">
+                                            <span t-esc="col.get('name', '')"/>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="lines" t-as="line">
+                                        <tr t-att-class="'level_%s %s' % (line.get('level', 1), line.get('class', ''))">
+                                            <td t-att-style="'padding-left: %spx;' % (line.get('level', 0) * 20)">
+                                                <span t-esc="line.get('name', '')"/>
+                                            </td>
+                                            <td t-foreach="line.get('columns', [])" t-as="column" class="text-end">
+                                                <span t-esc="column.get('name', '')"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <!-- Profit & Loss PDF Report -->
+    <template id="report_profit_loss_document">
+        <t t-call="tekprowess_accounting_reports.report_financial_base">
+            <t t-set="report_name" t-value="'Profit &amp; Loss Statement'"/>
+        </t>
+    </template>
+
+    <record id="action_report_profit_loss" model="ir.actions.report">
+        <field name="name">Profit &amp; Loss</field>
+        <field name="model">tekprowess.profit.loss.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tekprowess_accounting_reports.report_profit_loss_document</field>
+        <field name="report_file">tekprowess_accounting_reports.report_profit_loss_document</field>
+        <field name="binding_model_id" ref="model_tekprowess_profit_loss_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Balance Sheet PDF Report -->
+    <template id="report_balance_sheet_document">
+        <t t-call="tekprowess_accounting_reports.report_financial_base">
+            <t t-set="report_name" t-value="'Balance Sheet'"/>
+        </t>
+    </template>
+
+    <record id="action_report_balance_sheet" model="ir.actions.report">
+        <field name="name">Balance Sheet</field>
+        <field name="model">tekprowess.balance.sheet.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tekprowess_accounting_reports.report_balance_sheet_document</field>
+        <field name="report_file">tekprowess_accounting_reports.report_balance_sheet_document</field>
+        <field name="binding_model_id" ref="model_tekprowess_balance_sheet_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Cash Flow PDF Report -->
+    <template id="report_cash_flow_document">
+        <t t-call="tekprowess_accounting_reports.report_financial_base">
+            <t t-set="report_name" t-value="'Cash Flow Statement'"/>
+        </t>
+    </template>
+
+    <record id="action_report_cash_flow" model="ir.actions.report">
+        <field name="name">Cash Flow Statement</field>
+        <field name="model">tekprowess.cash.flow.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tekprowess_accounting_reports.report_cash_flow_document</field>
+        <field name="report_file">tekprowess_accounting_reports.report_cash_flow_document</field>
+        <field name="binding_model_id" ref="model_tekprowess_cash_flow_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Trial Balance PDF Report -->
+    <template id="report_trial_balance_document">
+        <t t-call="tekprowess_accounting_reports.report_financial_base">
+            <t t-set="report_name" t-value="'Trial Balance'"/>
+        </t>
+    </template>
+
+    <record id="action_report_trial_balance" model="ir.actions.report">
+        <field name="name">Trial Balance</field>
+        <field name="model">tekprowess.trial.balance.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tekprowess_accounting_reports.report_trial_balance_document</field>
+        <field name="report_file">tekprowess_accounting_reports.report_trial_balance_document</field>
+        <field name="binding_model_id" ref="model_tekprowess_trial_balance_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- General Ledger PDF Report -->
+    <template id="report_general_ledger_document">
+        <t t-call="tekprowess_accounting_reports.report_financial_base">
+            <t t-set="report_name" t-value="'General Ledger'"/>
+        </t>
+    </template>
+
+    <record id="action_report_general_ledger" model="ir.actions.report">
+        <field name="name">General Ledger</field>
+        <field name="model">tekprowess.general.ledger.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tekprowess_accounting_reports.report_general_ledger_document</field>
+        <field name="report_file">tekprowess_accounting_reports.report_general_ledger_document</field>
+        <field name="binding_model_id" ref="model_tekprowess_general_ledger_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Partner Ledger PDF Report -->
+    <template id="report_partner_ledger_document">
+        <t t-call="tekprowess_accounting_reports.report_financial_base">
+            <t t-set="report_name" t-value="'Partner Ledger'"/>
+        </t>
+    </template>
+
+    <record id="action_report_partner_ledger" model="ir.actions.report">
+        <field name="name">Partner Ledger</field>
+        <field name="model">tekprowess.partner.ledger.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tekprowess_accounting_reports.report_partner_ledger_document</field>
+        <field name="report_file">tekprowess_accounting_reports.report_partner_ledger_document</field>
+        <field name="binding_model_id" ref="model_tekprowess_partner_ledger_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Aged Partner PDF Report -->
+    <template id="report_aged_partner_document">
+        <t t-call="tekprowess_accounting_reports.report_financial_base">
+            <t t-set="report_name" t-value="'Aged Partner Balance'"/>
+        </t>
+    </template>
+
+    <record id="action_report_aged_partner" model="ir.actions.report">
+        <field name="name">Aged Partner Balance</field>
+        <field name="model">tekprowess.aged.partner.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tekprowess_accounting_reports.report_aged_partner_document</field>
+        <field name="report_file">tekprowess_accounting_reports.report_aged_partner_document</field>
+        <field name="binding_model_id" ref="model_tekprowess_aged_partner_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Tax Report PDF Report -->
+    <template id="report_tax_document">
+        <t t-call="tekprowess_accounting_reports.report_financial_base">
+            <t t-set="report_name" t-value="'Tax Report'"/>
+        </t>
+    </template>
+
+    <record id="action_report_tax" model="ir.actions.report">
+        <field name="name">Tax Report</field>
+        <field name="model">tekprowess.tax.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">tekprowess_accounting_reports.report_tax_document</field>
+        <field name="report_file">tekprowess_accounting_reports.report_tax_document</field>
+        <field name="binding_model_id" ref="model_tekprowess_tax_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

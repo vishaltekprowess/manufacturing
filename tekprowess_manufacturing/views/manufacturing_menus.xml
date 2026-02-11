@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Main Manufacturing Menu (extends existing) -->
+    
+    <!-- Quality Control Menu -->
+    <menuitem id="menu_manufacturing_quality_root"
+              name="Quality"
+              parent="mrp.menu_mrp_root"
+              sequence="50"/>
+    
+    <menuitem id="menu_quality_check"
+              name="Quality Checks"
+              parent="menu_manufacturing_quality_root"
+              action="action_quality_check"
+              sequence="10"/>
+    
+    <menuitem id="menu_quality_alert"
+              name="Quality Alerts"
+              parent="menu_manufacturing_quality_root"
+              action="action_quality_alert"
+              sequence="20"/>
+    
+    <menuitem id="menu_quality_point"
+              name="Quality Points"
+              parent="menu_manufacturing_quality_root"
+              action="action_quality_point"
+              sequence="30"/>
+    
+    <!-- Planning Menu -->
+    <menuitem id="menu_manufacturing_planning"
+              name="Planning"
+              parent="mrp.menu_mrp_root"
+              sequence="40"/>
+    
+    <menuitem id="menu_production_schedule"
+              name="Production Schedule"
+              parent="menu_manufacturing_planning"
+              action="action_production_schedule"
+              sequence="10"/>
+    
+    <menuitem id="menu_material_requirement"
+              name="Material Requirements"
+              parent="menu_manufacturing_planning"
+              action="action_material_requirement"
+              sequence="20"/>
+    
+    <menuitem id="menu_material_requirement_wizard"
+              name="Generate MRP"
+              parent="menu_manufacturing_planning"
+              action="action_material_requirement_wizard"
+              sequence="30"/>
+    
+    <!-- Manufacturing Operations Menu Enhancement -->
+    <menuitem id="menu_mrp_production_wizard"
+              name="Create Manufacturing Order"
+              parent="mrp.menu_mrp_manufacturing"
+              action="action_mrp_production_wizard"
+              sequence="1"/>
+    
+    <!-- Configuration Menu -->
+    <menuitem id="menu_manufacturing_config"
+              name="Configuration"
+              parent="mrp.menu_mrp_configuration"
+              sequence="100"/>
+    
+</odoo>

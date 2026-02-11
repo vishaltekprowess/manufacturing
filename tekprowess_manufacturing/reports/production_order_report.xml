@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Production Order Report Template -->
+    <template id="report_production_order_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        
+                        <h2>
+                            <span>Manufacturing Order: </span>
+                            <span t-field="o.name"/>
+                        </h2>
+                        
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Product:</strong>
+                                <span t-field="o.product_id"/>
+                                <br/>
+                                <strong>Quantity:</strong>
+                                <span t-field="o.product_qty"/>
+                                <span t-field="o.product_uom_id.name"/>
+                                <br/>
+                                <strong>Production Type:</strong>
+                                <span t-field="o.production_type"/>
+                                <br/>
+                                <t t-if="o.customer_id">
+                                    <strong>Customer:</strong>
+                                    <span t-field="o.customer_id"/>
+                                    <br/>
+                                </t>
+                            </div>
+                            <div class="col-6">
+                                <strong>State:</strong>
+                                <span t-field="o.state"/>
+                                <br/>
+                                <strong>Planned Start:</strong>
+                                <span t-field="o.date_start"/>
+                                <br/>
+                                <strong>Bill of Materials:</strong>
+                                <span t-field="o.bom_id"/>
+                                <br/>
+                                <t t-if="o.origin">
+                                    <strong>Source:</strong>
+                                    <span t-field="o.origin"/>
+                                    <br/>
+                                </t>
+                            </div>
+                        </div>
+                        
+                        <!-- Components -->
+                        <h3>Components</h3>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th class="text-end">Required</th>
+                                    <th class="text-end">Reserved</th>
+                                    <th class="text-end">Consumed</th>
+                                    <th>UoM</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.move_raw_ids" t-as="move">
+                                    <td><span t-field="move.product_id"/></td>
+                                    <td class="text-end"><span t-field="move.product_uom_qty"/></td>
+                                    <td class="text-end"><span t-field="move.reserved_availability"/></td>
+                                    <td class="text-end"><span t-field="move.quantity"/></td>
+                                    <td><span t-field="move.product_uom"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <!-- Work Orders -->
+                        <t t-if="o.workorder_ids">
+                            <h3>Work Orders</h3>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Operation</th>
+                                        <th>Work Center</th>
+                                        <th>Operator</th>
+                                        <th class="text-end">Expected Duration</th>
+                                        <th class="text-end">Actual Duration</th>
+                                        <th>State</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="o.workorder_ids" t-as="wo">
+                                        <td><span t-field="wo.name"/></td>
+                                        <td><span t-field="wo.workcenter_id"/></td>
+                                        <td><span t-field="wo.operator_id"/></td>
+                                        <td class="text-end"><span t-field="wo.duration_expected"/> min</td>
+                                        <td class="text-end"><span t-field="wo.duration"/> min</td>
+                                        <td><span t-field="wo.state"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+                        
+                        <!-- Notes -->
+                        <t t-if="o.notes or o.special_instructions">
+                            <h3>Notes</h3>
+                            <t t-if="o.notes">
+                                <p><span t-field="o.notes"/></p>
+                            </t>
+                            <t t-if="o.special_instructions">
+                                <strong>Special Instructions:</strong>
+                                <p><span t-field="o.special_instructions"/></p>
+                            </t>
+                        </t>
+                        
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+    
+</odoo>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Purchase Order Form View -->
+    <record id="view_purchase_order_form_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.form.inherit.manufacturing</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add stat button for MO -->
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_manufacturing_orders" type="object" 
+                        class="oe_stat_button" icon="fa-cogs"
+                        invisible="manufacturing_order_count == 0">
+                    <field name="manufacturing_order_count" widget="statinfo" string="Manufacturing Orders"/>
+                </button>
+            </xpath>
+            
+            <!-- Add field to show if for manufacturing -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="is_for_manufacturing" invisible="1"/>
+            </xpath>
+            
+        </field>
+    </record>
+    
+    <!-- Purchase Order Tree View -->
+    <record id="view_purchase_order_tree_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.tree.inherit.manufacturing</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="is_for_manufacturing" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>

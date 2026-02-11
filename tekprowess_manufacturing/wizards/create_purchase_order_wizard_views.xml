@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Create Purchase Order Wizard Form -->
+    <record id="view_create_purchase_order_wizard_form" model="ir.ui.view">
+        <field name="name">create.purchase.order.wizard.form</field>
+        <field name="model">create.purchase.order.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Create Purchase Order">
+                <group>
+                    <field name="production_id" readonly="1"/>
+                    <field name="company_id" invisible="1"/>
+                </group>
+                
+                <separator string="Materials to Purchase"/>
+                <field name="line_ids">
+                    <list editable="bottom" create="0" delete="0">
+                        <field name="selected" widget="boolean_toggle"/>
+                        <field name="product_id" readonly="1" force_save="1"/>
+                        <field name="required_qty" readonly="1"/>
+                        <field name="available_qty" readonly="1"/>
+                        <field name="shortage_qty" readonly="1"
+                               decoration-danger="shortage_qty > 0"
+                               decoration-success="shortage_qty == 0"/>
+                        <field name="purchase_qty"/>
+                        <field name="product_uom_id" readonly="1" force_save="1"/>
+                        <field name="supplier_id"/>
+                        <field name="unit_price"/>
+                        <field name="subtotal" sum="Total"/>
+                    </list>
+                </field>
+                
+                <div class="alert alert-info" role="alert" style="margin-top: 10px;">
+                    <strong>Note:</strong> 
+                    <ul>
+                        <li>Only materials with shortages are shown</li>
+                        <li>Deselect items you don't want to purchase</li>
+                        <li>Purchase orders will be grouped by supplier</li>
+                        <li>Adjust quantities and prices as needed</li>
+                    </ul>
+                </div>
+                
+                <footer>
+                    <button name="action_create_purchase_order" 
+                            type="object" 
+                            string="Create Purchase Order(s)" 
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Action to open the wizard -->
+    <record id="action_create_purchase_order_wizard" model="ir.actions.act_window">
+        <field name="name">Create Purchase Order</field>
+        <field name="res_model">create.purchase.order.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_view_types">form</field>
+    </record>
+    
+</odoo>

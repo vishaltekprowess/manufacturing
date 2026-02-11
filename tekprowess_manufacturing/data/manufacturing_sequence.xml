@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- Material Requirement Sequence -->
+        <record id="seq_material_requirement" model="ir.sequence">
+            <field name="name">Material Requirement</field>
+            <field name="code">manufacturing.material.requirement</field>
+            <field name="prefix">MRP/REQ/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+        <!-- Quality Alert Sequence -->
+        <record id="seq_quality_alert" model="ir.sequence">
+            <field name="name">Quality Alert</field>
+            <field name="code">manufacturing.quality.alert</field>
+            <field name="prefix">QA/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+    </data>
+</odoo>

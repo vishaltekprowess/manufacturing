@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- Product Template Form View -->
+    <record id="view_product_template_form_inherit" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.manufacturing</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            
+            <!-- Add Manufacturing page -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Manufacturing" name="manufacturing" 
+                      invisible="type not in ['product', 'consu']">
+                    <group>
+                        <group string="Production Settings">
+                            <field name="manufacturing_type"/>
+                            <field name="production_time" widget="float_time"/>
+                            <field name="setup_time"/>
+                        </group>
+                        <group string="Production Limits">
+                            <field name="min_production_qty"/>
+                            <field name="max_production_qty"/>
+                            <field name="scrap_rate"/>
+                        </group>
+                    </group>
+                    <group string="Quality Control">
+                        <field name="require_quality_check"/>
+                    </group>
+                    <group string="Alternatives">
+                        <field name="alternative_product_ids" widget="many2many_tags" nolabel="1"/>
+                    </group>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+    
+    <!-- Product Product Form View -->
+    <record id="view_product_product_form_inherit" model="ir.ui.view">
+        <field name="name">product.product.form.inherit.manufacturing</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//notebook" position="inside">
+                <page string="Manufacturing Notes" name="manufacturing_notes">
+                    <field name="manufacturing_notes" placeholder="Specific manufacturing notes for this variant..."/>
+                </page>
+            </xpath>
+            
+        </field>
+    </record>
+    
+</odoo>
