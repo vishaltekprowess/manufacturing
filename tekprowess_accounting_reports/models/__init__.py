@@ -9,3 +9,4 @@ from . import general_ledger_report
 from . import partner_ledger_report
 from . import aged_partner_report
 from . import tax_report
+from . import account_journal

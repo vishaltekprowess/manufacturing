@@ -1,0 +1,71 @@
+<odoo>
+    <record id="account_journal_dashboard_kanban_view_extended" model="ir.ui.view">
+        <field name="name">account.journal.dashboard.kanban.extended</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.account_journal_dashboard_kanban_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@id='sale_purchase_refund']" position="after">
+                <div>
+                    <a type="object" name="action_open_reconcile" groups="account.group_account_user">Payments Matching</a>
+                </div>
+            </xpath>
+            <!-- The following section handles the reconcile button -->
+            <xpath expr="//div[@name='bank_cash_buttons']" position="inside">
+                <button t-if="dashboard.number_to_reconcile > 0" type="object" name="action_open_reconcile" class="btn btn-secondary d-block text-nowrap" groups="account.group_account_basic"><t t-out="dashboard.number_to_reconcile"/> to reconcile</button>
+            </xpath>
+
+            <xpath expr="//div[@name='latest_statement']//span" position="replace">
+                <a type="object"
+                   name="action_open_reconcile_statement"
+                   title="Latest Statement"
+                   t-att-context="{'statement_id': dashboard.last_statement_id}">
+                    Last Statement
+                </a>
+            </xpath>
+
+            <xpath expr="//div[@id='dashboard_bank_cash_right']" position="inside">
+                <t t-if="dashboard.number_to_check > 0">
+                    <div class="row" groups="account.group_account_readonly">
+                        <div class="col overflow-hidden text-start">
+                            <a type="object" name="action_open_to_check"><t t-out="dashboard.number_to_check"/> to check</a>
+                        </div>
+                        <div class="col-auto text-end">
+                            <span dir="ltr"><t t-out="dashboard.to_check_balance"/></span>
+                        </div>
+                    </div>
+                </t>
+            </xpath>
+            <xpath expr="//h5[@id='card_action_view_menus']" position="after">
+                <div>
+                    <a role="menuitem" type="object" name="action_open_bank_transactions">Transactions</a>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Bank Statement Line Tree View -->
+    <record id="view_bank_statement_line_tree" model="ir.ui.view">
+        <field name="name">account.bank.statement.line.tree</field>
+        <field name="model">account.bank.statement.line</field>
+        <field name="arch" type="xml">
+            <list string="Bank Statement Lines" create="false" edit="false" delete="false">
+                <field name="date"/>
+                <field name="payment_ref"/>
+                <field name="partner_id"/>
+                <field name="amount"/>
+                <field name="journal_id"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-success="state == 'posted'"/>
+                <field name="is_reconciled" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Action for Bank Statement Lines -->
+    <record id="action_bank_statement_line_list" model="ir.actions.act_window">
+        <field name="name">Bank Statement Lines</field>
+        <field name="res_model">account.bank.statement.line</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+    </record>
+</odoo>

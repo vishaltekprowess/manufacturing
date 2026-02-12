@@ -35,6 +35,7 @@ All reports support:
         'security/ir.model.access.csv',
         'views/report_templates.xml',
         'views/financial_report_wizard_views.xml',
+        'views/dashboard_view.xml',
         'views/menuitems.xml',
     ],
     'assets': {

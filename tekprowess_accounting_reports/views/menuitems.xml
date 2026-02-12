@@ -6,6 +6,13 @@
               parent="account.menu_finance_reports"
               sequence="10"/>
 
+    <!-- Dashboard Menu -->
+    <menuitem id="menu_tekprowess_dashboard"
+              name="Dashboard"
+              parent="account.menu_finance"
+              action="account.open_account_journal_dashboard_kanban"
+              sequence="0"/>
+
     <!-- Wizard Menu Item -->
     <menuitem id="menu_financial_report_wizard"
               name="Generate Report"
