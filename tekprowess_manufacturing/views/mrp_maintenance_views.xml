@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Maintenance Stage Inherit -->
+    <record id="maintenance_stage_view_tree_inherit_mrp" model="ir.ui.view">
+        <field name="name">maintenance.stage.view.list.inherit.mrp</field>
+        <field name="model">maintenance.stage</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_stage_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='fold']" position="after">
+                <field name="create_leaves"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Maintenance Equipment Inherit -->
+    <record id="maintenance_equipment_view_form_inherit_mrp" model="ir.ui.view">
+        <field name="name">maintenance.equipment.view.form.inherit.mrp</field>
+        <field name="model">maintenance.equipment</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="button_mrp_workcenter" type="object" class="oe_stat_button"
+                    icon="fa-cogs" invisible="not workcenter_id" groups="mrp.group_mrp_routings">
+                    <div class="o_stat_info">
+                        <span class="o_stat_text">Work Center</span>
+                    </div>
+                </button>
+            </xpath>
+            <xpath expr="//field[@name='location']" position="after">
+                <field name="workcenter_id" context="{'default_company_id':company_id}" groups="mrp.group_mrp_routings"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Workcenters Kanban Inherit -->
+    <record id="maintenance_workcenter_view_kanban_inherit_mrp" model="ir.ui.view">
+        <field name="name">maintenance.workcenter.view.kanban.inherit.mrp</field>
+        <field name="model">mrp.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_workcenter_view_kanban"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//t[@t-name='card']" position="inside">
+                <footer>
+                    <div class="badge text-bg-danger" t-if="!selection_mode and record.maintenance_open_count.raw_value" >
+                        <field name="maintenance_open_count"/> Request
+                    </div>
+                    <field t-if="!selection_mode" name="activity_ids" class="ms-auto" widget="kanban_activity" />
+                    <field name="technician_user_id" widget="many2one_avatar_user"/>
+                </footer>
+            </xpath>
+        </field>
+    </record>
+    <!-- Maintenance Request Form Inherit -->
+    <record id="maintenance_request_view_form_inherit_mrp" model="ir.ui.view">
+        <field name="name">maintenance.request.view.form.inherit.mrp</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='equipment_id']" position="before">
+                <field name="maintenance_for"/>
+                <field name="workcenter_id" invisible="maintenance_for == 'equipment'" required="maintenance_for == 'workcenter'"/>
+            </xpath>
+            <xpath expr="//field[@name='equipment_id']" position="attributes">
+                <attribute name="invisible">maintenance_for == 'workcenter'</attribute>
+                <attribute name="required">maintenance_for == 'equipment'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='maintenance_type']" position="after">
+                <field name="production_company_id" invisible="1"/>
+                <field name="workorder_id" invisible="1"/>
+                <field name="production_id" options="{'no_create': True, 'no_open': True}"/>
+                <field name="workorder_id" invisible="not production_id" options="{'no_create': True, 'no_open': True}" domain="[('production_id', '=', production_id)]" groups="mrp.group_mrp_routings"/>
+            </xpath>
+            <xpath expr="//chatter" position="after">
+                <div invisible="not context.get('discard_on_footer_button', False)">
+                    <footer class="oe_edit_only">
+                        <button special="save" data-hotkey="q" string="Save" class="oe_highlight"/>
+                        <button string="Discard" special="cancel" data-hotkey="x"/>
+                    </footer>
+                </div>
+            </xpath>
+            <field name="equipment_id" position="attributes">
+                <attribute name="domain">['|', (not workorder_id and 1 or 0, '=', 1), '|', ('workcenter_id', '=', False), ('workcenter_id.order_ids', 'in', workorder_id)]</attribute>
+            </field>
+            <xpath expr="//field[@name='priority']" position="before">
+                <label for="block_workcenter" invisible="maintenance_for == 'equipment'"/>
+                <div class="d-inline-flex" invisible="maintenance_for == 'equipment'">
+                    <field name="block_workcenter" nolabel="1" class="ms-0" style="width: fit-content;"/>
+                </div>
+                <field name="recurring_leaves_count" invisible="maintenance_for == 'equipment' or not recurring_maintenance or not block_workcenter" groups="base.group_no_one"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Maintenance Request Tablet View Support -->
+    <record id="maintenance_request_view_form_inherit_mrp_workorder" model="ir.ui.view">
+        <field name="name">maintenance.request.view.form.inherit.mrp.tablet</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance_request_view_form_inherit_mrp"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="attributes">
+                <attribute name="js_class">maintenance_request_form</attribute>
+            </xpath>
+        </field>
+    </record>
+    <!-- Maintenance Request Search Inherit -->
+    <record id="maintenance_request_view_search_inherit_mrp" model="ir.ui.view">
+        <field name="name">maintenence.request.view.search.inherit.mrp</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='maintenance_team_id']" position="after">
+                <field name="production_id" string="Operation" filter_domain="['|', ('production_id', 'ilike', self), ('workorder_id', 'ilike', self)]"/>
+                <field name="workcenter_id" string="Workcenter" filter_domain="[('workcenter_id', 'ilike', self)]"/>
+            </xpath>
+        </field>
+    </record>
+    <!-- Maintenance Request Kanban Inherit -->
+    <record id="maintenance_request_view_kanban_inherit_mrp" model="ir.ui.view">
+        <field name="name">maintenance.request.view.kanban.inherit.mrp</field>
+        <field name="model">maintenance.request</field>
+        <field name="inherit_id" ref="maintenance.hr_equipment_request_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='schedule_date']" position="before">
+                <field name="workcenter_id"/>
+            </xpath>
+        </field>
+    </record>
+    
+    <!-- Action for Work Centers (Maintenance View) -->
+    <record id="maintenance_workcenter_action" model="ir.actions.act_window">
+        <field name="name">Work Centers</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.workcenter</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="view_id" ref="maintenance_workcenter_view_kanban_inherit_mrp"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'kanban', 'view_id': ref('maintenance_workcenter_view_kanban_inherit_mrp')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('mrp.mrp_workcenter_tree_view')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('mrp.mrp_workcenter_view')})]"/>
+        <field name="search_view_id" ref="mrp.view_mrp_workcenter_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            Create a new work center
+            </p><p>
+            Manufacturing operations are processed at Work Centers. A Work Center can be composed of
+            workers and/or machines, they are used for costing, scheduling, capacity planning, etc.
+            </p>
+        </field>
+    </record>
+    <!-- Menus -->
+    <menuitem
+        id="maintenance.menu_equipment_form"
+        name="Equipment"
+        parent="maintenance.menu_maintenance_title"
+        groups="maintenance.group_equipment_manager,base.group_user"
+        sequence="2"/>
+    <menuitem id="menu_workcenter_tree"
+        action="maintenance_workcenter_action"
+        groups="mrp.group_mrp_routings"
+        parent="maintenance.menu_equipment_form"
+        sequence="1"/>
+    <menuitem
+        id="menu_equipment_dashboard"
+        name="Machines &amp; Tools"
+        parent="maintenance.menu_equipment_form"
+        action="maintenance.hr_equipment_action"
+        sequence="2"/>
+    <!-- Action from Workcenter Button -->
+    <record id="mrp_workcenter_request_action_from_workcenter" model="ir.actions.act_window">
+        <field name="name">Maintenance Requests</field>
+        <field name="res_model">maintenance.request</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_workcenter"/>
+        <field name="view_mode">kanban,list,form,pivot,graph,calendar</field>
+        <field name="context">{
+            'default_maintenance_for': 'workcenter',
+            'default_workcenter_id': active_id,
+        }</field>
+        <field name="domain">[('workcenter_id', '=', active_id)]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Add a new maintenance request
+            </p><p>
+                Follow the process of the request and communicate with the collaborator.
+            </p>
+        </field>
+    </record>
+    <!-- Workcenter Form Inherit -->
+    <record id="mrp_workcenter_view_form_inherit_maintenance" model="ir.ui.view">
+        <field name="name">mrp.workcenter.form.inherit.maintenance</field>
+        <field name="model">mrp.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_workcenter_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Equipment" name="equipment">
+                    <field name="equipment_ids" widget="many2many">
+                        <list string="Equipment">
+                            <field name="name"/>
+                            <field name="technician_user_id"/>
+                            <field name="category_id"/>
+                            <field name="mtbf"/>
+                            <field name="mttr"/>
+                            <field name="estimated_next_failure" string="Est. Next Failure"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+            <div name="button_box" position="inside">
+                <button name="%(mrp_workcenter_request_action_from_workcenter)d"
+                    type="action"
+                    class="oe_stat_button"
+                    context="{'search_default_active': True, 'default_company_id': company_id, 'default_maintenance_team_id': maintenance_team_id}"
+                    icon="fa-wrench">
+                    <field string="Maintenance" name="maintenance_open_count" widget="statinfo"/>
+                </button>
+            </div>
+            <xpath expr="//notebook" position="inside">
+                <page string="Maintenance" name="maintenance">
+                    <group>
+                        <group name="maintenance">
+                            <field name="effective_date"/>
+                            <field name="maintenance_team_id" context="{'default_company_id':company_id}"/>
+                            <field name="technician_user_id" domain="[('share', '=', False)]"/>
+                        </group>
+                        <group name="statistics">
+                            <label for="expected_mtbf" string="Expected Mean Time Between Failure"/>
+                            <div class="o_row">
+                                <field name="expected_mtbf"/> days
+                            </div>
+                            <label for="mtbf" string="Mean Time Between Failure"/>
+                            <div class="o_row">
+                                <field name="mtbf"/> days
+                            </div>
+                            <label for="estimated_next_failure" string="Estimated Next Failure"/>
+                            <div class="o_row">
+                                <field name="estimated_next_failure"/>
+                            </div>
+                            <field name="latest_failure_date" string="Latest Failure"/>
+                            <label for="mttr" string="Mean Time To Repair"/>
+                            <div class="o_row">
+                                <field name="mttr"/> days
+                            </div>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+    <!-- Workcenter Kanban Inherit (Again?) NO, merging existing view -->
+    <record id="mrp_workcenter_view_kanban_inherit_maintenance_shortcut" model="ir.ui.view">
+        <field name="name">mrp.workcenter.view.kanban.inherit.maintenance.shortcut</field>
+        <field name="model">mrp.workcenter</field>
+        <field name="inherit_id" ref="mrp.mrp_workcenter_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='plan_order']" position="after">
+                <div>
+                    <a name="%(maintenance.hr_equipment_request_action)d" type="action">Maintenance</a>
+                </div>
+            </xpath>
+        </field>
+    </record>
+    <!-- Manufacturing Order Inherit -->
+    <record id="mrp_production_view_form_inherit_maintenance" model="ir.ui.view">
+        <field name="name">mrp.production.view.form.inherit.maintenance</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="button_maintenance_req" type="object" string="Maintenance Request"/>
+            </xpath>
+            <div name="button_box" position="inside">
+                <button name="open_maintenance_request_mo" type="object" class="oe_stat_button" icon="fa-wrench" invisible="maintenance_count == 0" context="{'search_default_production_id': id}">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="maintenance_count"/></span>
+                        <span class="o_stat_text">Maintenance</span>
+                    </div>
+                </button>
+            </div>
+        </field>
+    </record>
+</odoo>

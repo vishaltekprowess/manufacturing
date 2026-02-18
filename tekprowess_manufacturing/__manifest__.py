@@ -19,6 +19,7 @@
         * Automated Procurement
         * Cost Analysis
         * Production Scheduling
+        * Maintenance Integration
     """,
     'author': "Tekprowess",
     'category': 'Manufacturing',
@@ -38,6 +39,8 @@
         'manufacture_process_costing',
         'muk_web_theme',
         'tekprowess_accounting_reports',
+        'maintenance',
+        'web_gantt',
     ],
     'data': [
         # Security
@@ -47,6 +50,7 @@
         # Data
         'data/manufacturing_sequence.xml',
         'data/quality_check_data.xml',
+        'data/mrp_maintenance/mrp_maintenance_data.xml',
         
         # Wizards (must be loaded early as they're referenced in views)
         'wizards/mrp_production_wizard_views.xml',
@@ -70,6 +74,9 @@
         'views/purchase_order_views.xml',
         'views/sale_order_views.xml',
         
+        # Views - Maintenance
+        'views/mrp_maintenance_views.xml',
+        
         # Reports
         'reports/manufacturing_reports.xml',
         'reports/production_order_report.xml',
@@ -79,6 +86,11 @@
         # Menus
         'views/manufacturing_menus.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'tekprowess_manufacturing/static/src/components/maintenance_request_form_view.js',
+        ],
+    },
     'demo': [],
     'installable': True,
     'application': True,

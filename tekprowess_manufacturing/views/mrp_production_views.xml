@@ -131,4 +131,40 @@
         </field>
     </record>
     
+
+    <!-- Manufacturing Order Gantt View -->
+    <record id="view_mrp_production_gantt" model="ir.ui.view">
+        <field name="name">mrp.production.gantt</field>
+        <field name="model">mrp.production</field>
+        <field name="arch" type="xml">
+            <gantt string="Production" 
+                   date_start="date_start" 
+                   date_stop="date_finished" 
+                   default_group_by="product_id" 
+                   color="state"
+                   scales="day,week,month,year"
+                   precision="{'day': 'hour:full', 'week': 'day:full', 'month': 'day:full', 'year': 'month:full'}"
+                   thumbnails="{'user_id': 'avatar_128'}"
+                   decoration-success="state == 'done'"
+                   decoration-warning="state == 'to_close'"
+                   decoration-info="state == 'confirmed'"
+                   decoration-danger="state == 'cancel' or (state not in ('done', 'cancel') and date_start &lt; current_date)">
+                <field name="name"/>
+                <field name="product_id"/>
+                <field name="state"/>
+                <field name="user_id"/>
+                <field name="date_start"/>
+                <field name="date_finished"/>
+                <field name="product_uom_qty"/>
+                <field name="qty_producing"/>
+                <field name="bom_id"/>
+            </gantt>
+        </field>
+    </record>
+
+    <!-- Update Action to include Gantt View -->
+    <record id="mrp.mrp_production_action" model="ir.actions.act_window">
+        <field name="view_mode">list,kanban,form,calendar,pivot,graph,activity,gantt</field>
+    </record>
+
 </odoo>
