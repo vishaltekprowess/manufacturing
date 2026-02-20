@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_purchase_order_manager_confirm" inherit_id="purchase.portal_my_purchase_order">
+        <xpath expr="//div[hasclass('o_portal_purchase_sidebar')]//t[@t-set='entries']//div[hasclass('d-flex', 'flex-column')]" position="before">
+            <t t-if="order.manager_id and not order.is_manager_confirmed">
+                <t t-set="is_manager" t-value="request.env.user == order.manager_id or (pid and int(pid) == order.manager_id.partner_id.id)"/>
+                <div t-if="is_manager" class="d-flex flex-column gap-2 mt-3 mb-3">
+                    <a t-attf-href="/my/purchase/#{order.id}/manager_confirm?access_token=#{order.access_token}#{'&amp;pid=' + pid if pid else ''}#{'&amp;hash=' + hash if hash else ''}" class="btn btn-primary btn-block px-3" title="Confirm as Manager">
+                        Confirm as Manager
+                    </a>
+                </div>
+            </t>
+            <div t-if="order.is_manager_confirmed" class="alert alert-success mt-3 mb-3 p-2 text-center" role="alert">
+                <i class="fa fa-check-circle"/> Manager Confirmed
+            </div>
+        </xpath>
+    </template>
+
+    <template id="portal_my_purchase_order_manager_confirm_title" inherit_id="purchase.purchase_order_portal_content">
+        <xpath expr="//div[@id='introduction']//h2" position="replace">
+            <h2 class="my-0">
+                Purchase Order
+                <em t-esc="order.name"/>
+            </h2>
+        </xpath>
+        <xpath expr="//div[@id='po_date']//div[hasclass('mb-3', 'col-6')]" position="replace">
+            <div class="mb-3 col-6">
+                <strong>Order Date:</strong>
+                <span t-field="order.date_order" t-options='{"widget": "date"}'/>
+            </div>
+        </xpath>
+        <xpath expr="//table[@id='purchase_order_table']//t[@t-set='display_price_and_taxes']" position="replace">
+            <t t-set="display_price_and_taxes" t-value="not update_dates"/>
+        </xpath>
+        <xpath expr="//th[span='Amount']" position="replace">
+            <th class="text-end" t-if="not update_dates">
+                <span>Amount</span>
+            </th>
+        </xpath>
+        <xpath expr="//td[span[hasclass('oe_order_line_price_subtotal')]]" position="replace">
+            <td class="text-end" t-if="not update_dates">
+                <span class="oe_order_line_price_subtotal" t-field="line.price_subtotal"/>
+            </td>
+        </xpath>
+        <xpath expr="//div[@id='total']" position="replace">
+            <div id="total" class="row" name="total" style="page-break-inside: avoid;">
+                <div t-attf-class="#{'col-4' if report_type != 'html' else 'col-sm-7 col-md-5'} ms-auto">
+                    <t t-call="purchase.purchase_order_portal_content_totals_table"/>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

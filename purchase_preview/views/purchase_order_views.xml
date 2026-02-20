@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_order_form_preview_inherit" model="ir.ui.view">
+        <field name="name">purchase.order.form.preview.inherit</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_rfq_send']" position="before">
+                <button name="action_preview_purchase_order" type="object" string="Preview" class="btn-secondary" data-hotkey="o" title="Preview Purchase Order"/>
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="manager_id"/>
+                <field name="is_manager_confirmed" readonly="1" invisible="not manager_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
