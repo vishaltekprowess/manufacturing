@@ -139,6 +139,28 @@ class MrpProduction(models.Model):
             production.quality_alert_count = self.env['manufacturing.quality.alert'].search_count([
                 ('production_id', '=', production.id)
             ])
+
+    # Cancel Reason Logic
+    cancel_reason_count = fields.Integer(compute='_compute_cancel_reason_count', string='Cancel Reasons')
+
+    def _compute_cancel_reason_count(self):
+        for production in self:
+            production.cancel_reason_count = self.env['mrp.cancel.reason'].search_count([
+                ('manufacturing_id', '=', production.id)
+            ])
+
+    def action_view_cancel_reasons(self):
+        self.ensure_one()
+        return {
+            'name': _('Cancel Reasons'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'mrp.cancel.reason',
+            'view_mode': 'list,form',
+            'domain': [('manufacturing_id', '=', self.id)],
+            'context': {
+                'default_manufacturing_id': self.id,
+            },
+        }
     
     @api.depends('expected_duration', 'actual_duration')
     def _compute_efficiency(self):

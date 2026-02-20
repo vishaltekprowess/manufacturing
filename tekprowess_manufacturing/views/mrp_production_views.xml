@@ -25,6 +25,13 @@
                         <span class="o_stat_text">Quality Alerts</span>
                     </div>
                 </button>
+                <button name="action_view_cancel_reasons" type="object" 
+                        class="oe_stat_button" icon="fa-ban">
+                    <div class="o_field_widget o_stat_info">
+                        <span class="o_stat_value"><field name="cancel_reason_count"/></span>
+                        <span class="o_stat_text">Cancel</span>
+                    </div>
+                </button>
             </xpath>
             
             <!-- Add Create Purchase Order button -->
