@@ -1,38 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Custom Paper Format for Financial Reports -->
+    <record id="paperformat_financial_report" model="report.paperformat">
+        <field name="name">Financial Report Paperformat</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">15</field>
+        <field name="margin_bottom">15</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">10</field>
+        <field name="dpi">90</field>
+    </record>
+
     <!-- Base Report Template -->
     <template id="report_financial_base">
         <t t-call="web.html_container">
             <t t-call="web.basic_layout">
-                <div class="page" style="padding-top: 20px;">
-                    <div class="row">
-                        <div class="col-12">
-                            <h2 t-esc="report_name"/>
-                            <p>
-                                <strong>Period:</strong> 
-                                <span t-esc="date_from"/> to <span t-esc="date_to"/>
-                            </p>
+                <div class="page custom-report-page">
+                    <style>
+                        .custom-report-page {
+                            font-family: 'Verdana', sans-serif;
+                            font-size: 12px;
+                            color: #212529;
+                        }
+                        .report-header {
+                            background-color: #d8dce2;
+                            padding: 10px;
+                            margin-bottom: 20px;
+                        }
+                        .report-title-container {
+                            font-weight: bold;
+                            font-size: 20px;
+                            text-align: center;
+                            text-transform: uppercase;
+                            margin-bottom: 5px;
+                        }
+                        .company-info {
+                            font-size: 12px;
+                            line-height: 1.2;
+                            color: #212529;
+                            text-align: left;
+                        }
+                        .report-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                        }
+                        .report-table th, .report-table td {
+                            padding: 5px 6px;
+                            vertical-align: middle;
+                        }
+                        .period-header {
+                            border: 1px solid #dee2e6 !important;
+                            text-align: center;
+                            font-weight: bold;
+                            font-size: 13px;
+                        }
+                        .balance-header {
+                            text-align: right;
+                            font-weight: bold;
+                            padding-top: 5px;
+                            padding-bottom: 5px;
+                            border-bottom: 1px solid #dee2e6;
+                        }
+                        .level_0 {
+                            background-color: #e7e9ed;
+                            font-weight: bold;
+                            color: #495057;
+                            font-size: 13px;
+                        }
+                        .level_1, .level_2, .level_3 {
+                            border-bottom: 0.5px solid #dee2e6;
+                        }
+                        .level_4, .level_5, .level_6, .level_7 {
+                            border-bottom: 0.5px solid #e9ecef;
+                        }
+                        .amount-cell {
+                            text-align: right;
+                            min-width: 90px;
+                        }
+                        .total-line {
+                            font-weight: bold;
+                        }
+                        .amount-muted {
+                            color: #ced4da;
+                        }
+                        .border-0 {
+                            border: none !important;
+                        }
+                        .company-logo-container {
+                            margin-bottom: 15px;
+                            text-align: left;
+                        }
+                        .company-logo-container img {
+                            max-height: 80px;
+                        }
+                    </style>
+
+                    <!-- Logo on first page -->
+                    <div class="company-logo-container">
+                        <img t-if="env.company.logo" t-att-src="image_data_uri(env.company.logo)" alt="Logo"/>
+                    </div>
+
+                    <div class="report-header">
+                        <div class="report-title-container">
+                            <span t-esc="report_name"/>
+                        </div>
+                        <div class="company-info">
+                            <div t-if="company_name"><span t-esc="company_name"/></div>
+                            <div t-if="env.company.street"><span t-esc="env.company.street"/></div>
+                            <div t-if="env.company.street2"><span t-esc="env.company.street2"/></div>
+                            <div t-if="env.company.city or env.company.zip">
+                                <span t-esc="env.company.city"/> <span t-esc="env.company.zip"/>
+                            </div>
+                            <div t-if="env.company.state_id or env.company.country_id">
+                                <span t-esc="env.company.state_id.name"/> <span t-esc="env.company.country_id.code"/>
+                            </div>
+                            <div t-if="env.company.country_id"><span t-esc="env.company.country_id.name"/></div>
+                            <div t-if="env.company.vat">
+                                <t t-if="env.company.country_id.vat_label" t-esc="env.company.country_id.vat_label + ':'"/>
+                                <t t-else="">GSTIN:</t>
+                                <span t-esc="env.company.vat"/>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="row mt-3">
-                        <div class="col-12">
-                            <table class="table table-sm table-bordered">
+
+                    <div class="row mx-0">
+                        <div class="col-12 px-0">
+                            <table class="report-table">
                                 <thead>
                                     <tr>
-                                        <th t-foreach="columns" t-as="col">
-                                            <span t-esc="col.get('name', '')"/>
-                                        </th>
+                                        <th style="width: 75%;" class="border-0"></th>
+                                        <t t-foreach="columns[1:]" t-as="col">
+                                            <th class="period-header">
+                                                <t t-if="date_from and date_to">
+                                                    <span t-esc="str(date_from)[:4]"/> - <span t-esc="str(date_to)[:4]"/>
+                                                </t>
+                                                <t t-else="">
+                                                    <span t-esc="col.get('name', '')"/>
+                                                </t>
+                                            </th>
+                                        </t>
+                                    </tr>
+                                    <tr>
+                                        <th class="border-0"></th>
+                                        <t t-foreach="columns[1:]" t-as="col">
+                                            <th class="balance-header">Balance</th>
+                                        </t>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <t t-foreach="lines" t-as="line">
-                                        <tr t-att-class="'level_%s %s' % (line.get('level', 1), line.get('class', ''))">
-                                            <td t-att-style="'padding-left: %spx;' % (line.get('level', 0) * 20)">
+                                        <t t-set="bold_class" t-value="' total-line' if line.get('unfolded') or 'total' in str(line.get('id', '')).lower() else ''"/>
+                                        <tr t-att-class="'level_%s %s%s' % (line.get('level', 1), line.get('class', ''), bold_class)">
+                                            <td t-att-style="'padding-left: %spx;' % ((line.get('level', 1)) * 12)">
                                                 <span t-esc="line.get('name', '')"/>
                                             </td>
-                                            <td t-foreach="line.get('columns', [])" t-as="column" class="text-end">
-                                                <span t-esc="column.get('name', '')"/>
+                                            <td t-foreach="line.get('columns', [])" t-as="column" class="amount-cell">
+                                                <t t-set="col_val" t-value="column.get('name', '')"/>
+                                                <span t-att-class="'amount-muted' if col_val in ('0.00', '0.00\N{euro sign}', '0.00$', '0', 0, 0.0, '-', '0.00%') or str(col_val).replace(',', '').replace('.', '').replace('₹', '').replace(' ', '').replace('$', '').replace('€', '').replace('-', '') == '000' else ''" t-esc="col_val"/>
                                             </td>
                                         </tr>
                                     </t>
@@ -60,6 +188,7 @@
         <field name="report_file">tekprowess_accounting_reports.report_profit_loss_document</field>
         <field name="binding_model_id" ref="model_tekprowess_profit_loss_report"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="tekprowess_accounting_reports.paperformat_financial_report"/>
     </record>
 
     <!-- Balance Sheet PDF Report -->
@@ -77,6 +206,7 @@
         <field name="report_file">tekprowess_accounting_reports.report_balance_sheet_document</field>
         <field name="binding_model_id" ref="model_tekprowess_balance_sheet_report"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="tekprowess_accounting_reports.paperformat_financial_report"/>
     </record>
 
     <!-- Cash Flow PDF Report -->
@@ -94,6 +224,7 @@
         <field name="report_file">tekprowess_accounting_reports.report_cash_flow_document</field>
         <field name="binding_model_id" ref="model_tekprowess_cash_flow_report"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="tekprowess_accounting_reports.paperformat_financial_report"/>
     </record>
 
     <!-- Trial Balance PDF Report -->
@@ -111,6 +242,7 @@
         <field name="report_file">tekprowess_accounting_reports.report_trial_balance_document</field>
         <field name="binding_model_id" ref="model_tekprowess_trial_balance_report"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="tekprowess_accounting_reports.paperformat_financial_report"/>
     </record>
 
     <!-- General Ledger PDF Report -->
@@ -128,6 +260,7 @@
         <field name="report_file">tekprowess_accounting_reports.report_general_ledger_document</field>
         <field name="binding_model_id" ref="model_tekprowess_general_ledger_report"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="tekprowess_accounting_reports.paperformat_financial_report"/>
     </record>
 
     <!-- Partner Ledger PDF Report -->
@@ -145,6 +278,7 @@
         <field name="report_file">tekprowess_accounting_reports.report_partner_ledger_document</field>
         <field name="binding_model_id" ref="model_tekprowess_partner_ledger_report"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="tekprowess_accounting_reports.paperformat_financial_report"/>
     </record>
 
     <!-- Aged Partner PDF Report -->
@@ -162,6 +296,7 @@
         <field name="report_file">tekprowess_accounting_reports.report_aged_partner_document</field>
         <field name="binding_model_id" ref="model_tekprowess_aged_partner_report"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="tekprowess_accounting_reports.paperformat_financial_report"/>
     </record>
 
     <!-- Tax Report PDF Report -->
@@ -179,6 +314,7 @@
         <field name="report_file">tekprowess_accounting_reports.report_tax_document</field>
         <field name="binding_model_id" ref="model_tekprowess_tax_report"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="tekprowess_accounting_reports.paperformat_financial_report"/>
     </record>
 
 </odoo>
