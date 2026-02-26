@@ -108,6 +108,9 @@
                         <div class="report-title-container">
                             <span t-esc="report_name"/>
                         </div>
+                        <div class="report-period" style="text-align: center; font-size: 14px; margin-bottom: 10px;" t-if="date_from and date_to">
+                            <span t-esc="str(date_from)[:4]"/> - <span t-esc="str(date_to)[:4]"/>
+                        </div>
                         <div class="company-info">
                             <div t-if="company_name"><span t-esc="company_name"/></div>
                             <div t-if="env.company.street"><span t-esc="env.company.street"/></div>
@@ -132,22 +135,13 @@
                             <table class="report-table">
                                 <thead>
                                     <tr>
-                                        <th style="width: 75%;" class="border-0"></th>
+                                        <th class="balance-header text-start">
+                                            <span t-esc="columns[0].get('name', '')" />
+                                        </th>
                                         <t t-foreach="columns[1:]" t-as="col">
-                                            <th class="period-header">
-                                                <t t-if="date_from and date_to">
-                                                    <span t-esc="str(date_from)[:4]"/> - <span t-esc="str(date_to)[:4]"/>
-                                                </t>
-                                                <t t-else="">
-                                                    <span t-esc="col.get('name', '')"/>
-                                                </t>
+                                            <th class="balance-header">
+                                                <span t-esc="col.get('name', '')"/>
                                             </th>
-                                        </t>
-                                    </tr>
-                                    <tr>
-                                        <th class="border-0"></th>
-                                        <t t-foreach="columns[1:]" t-as="col">
-                                            <th class="balance-header">Balance</th>
                                         </t>
                                     </tr>
                                 </thead>
