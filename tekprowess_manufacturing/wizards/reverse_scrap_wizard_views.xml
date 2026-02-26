@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_scrap_reverse_wizard_form" model="ir.ui.view">
+        <field name="name">stock.scrap.reverse.wizard.form</field>
+        <field name="model">stock.scrap.reverse.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Reverse Scrap">
+                <group>
+                    <field name="scrap_id"/>
+                    <field name="revert_qty"/>
+                    <field name="company_id" invisible="1"/>
+                </group>
+                <footer>
+                    <button string="Confirm" name="action_reverse_scrap" type="object" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_stock_scrap_reverse_wizard" model="ir.actions.act_window">
+        <field name="name">Reverse Scrap</field>
+        <field name="res_model">stock.scrap.reverse.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

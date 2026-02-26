@@ -57,11 +57,13 @@
         'wizards/mrp_production_wizard_views.xml',
         'wizards/material_requirement_wizard_views.xml',
         'wizards/create_purchase_order_wizard_views.xml',
+        'wizards/reverse_scrap_wizard_views.xml',
         
         # Views - Manufacturing Orders
         'views/mrp_production_views.xml',
         'views/mrp_bom_views.xml',
         'views/mrp_workorder_views.xml',
+        'views/stock_scrap_views.xml',
         
         # Views - Product & Planning
         'views/product_template_views.xml',

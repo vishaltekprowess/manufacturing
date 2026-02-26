@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_stock_scrap_form_inherit_reverse" model="ir.ui.view">
+        <field name="name">stock.scrap.form.inherit.reverse</field>
+        <field name="model">stock.scrap</field>
+        <field name="inherit_id" ref="stock.stock_scrap_form_view" />
+        <field name="arch" type="xml">
+            <!-- Add Reverse Scrap button in header. Odoo 18 uses invisible attribute directly -->
+            <xpath expr="//header" position="inside">
+                <button name="action_open_reverse_wizard"
+                    string="Reverse Scrap"
+                    type="object"
+                    class="btn-secondary"
+                    invisible="state != 'done' or scrap_qty &lt;= 0.0 or scrap_qty == reverted_qty"
+                />
+            </xpath>
+            
+            <xpath expr="//field[@name='origin']" position="after">
+                <field name="reverted_qty" invisible="reverted_qty == 0.0"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
