@@ -17,3 +17,5 @@ access_material_requirement_wizard_user,material.requirement.wizard.user,model_m
 access_create_purchase_order_wizard_user,create.purchase.order.wizard.user,model_create_purchase_order_wizard,group_manufacturing_user,1,1,1,1
 access_create_purchase_order_wizard_line_user,create.purchase.order.wizard.line.user,model_create_purchase_order_wizard_line,group_manufacturing_user,1,1,1,1
 access_stock_scrap_reverse_wizard_user,stock.scrap.reverse.wizard.user,model_stock_scrap_reverse_wizard,base.group_user,1,1,1,1
+access_tekprowess_manufacturing_dashboard_user,tekprowess.manufacturing.dashboard.user,model_tekprowess_manufacturing_dashboard,base.group_user,1,1,1,1
+

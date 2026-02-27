@@ -86,12 +86,18 @@
         'reports/bom_structure_report.xml',
         'reports/material_consumption_report.xml',
         
+        # Dashboard
+        'views/dashboard_views.xml',
+
         # Menus
         'views/manufacturing_menus.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'tekprowess_manufacturing/static/src/components/maintenance_request_form_view.js',
+            'tekprowess_manufacturing/static/src/js/manufacturing_dashboard.js',
+            'tekprowess_manufacturing/static/src/xml/manufacturing_dashboard.xml',
+            'tekprowess_manufacturing/static/src/css/manufacturing_dashboard.css',
         ],
     },
     'demo': [],
