@@ -48,21 +48,37 @@
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">Draft</span><button class="tp_btn" t-on-click="onClickMfgDraft">Open</button></div>
                             <div class="tp_count_big" t-on-click="onClickMfgDraft"><t t-esc="state.data.draft or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_purple" t-attf-style="width: #{this.pct(state.data.draft, state.data.total)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.draft, state.data.total)"/>% of total</div>
                             <div class="tp_card_sub">Manufacturing Orders</div>
                         </div>
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">Confirmed</span><button class="tp_btn" t-on-click="onClickMfgConfirmed">Open</button></div>
                             <div class="tp_count_big" t-on-click="onClickMfgConfirmed"><t t-esc="state.data.confirmed or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_blue" t-attf-style="width: #{this.pct(state.data.confirmed, state.data.total)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.confirmed, state.data.total)"/>% of total</div>
                             <div class="tp_card_sub">Manufacturing Orders</div>
                         </div>
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">In Progress</span><button class="tp_btn" t-on-click="onClickMfgProgress">Open</button></div>
                             <div class="tp_count_big tp_orange" t-on-click="onClickMfgProgress"><t t-esc="state.data.progress or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_orange" t-attf-style="width: #{this.pct(state.data.progress, state.data.total)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.progress, state.data.total)"/>% of total</div>
                             <div class="tp_card_sub">Manufacturing Orders</div>
                         </div>
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">Done</span><button class="tp_btn tp_btn_secondary" t-on-click="onClickMfgDone">Open</button></div>
                             <div class="tp_count_big tp_green" t-on-click="onClickMfgDone"><t t-esc="state.data.done or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_green" t-attf-style="width: #{this.pct(state.data.done, state.data.total)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.done, state.data.total)"/>% of total</div>
                             <div class="tp_card_sub">Manufacturing Orders</div>
                         </div>
                     </div>
@@ -145,21 +161,37 @@
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">Quotations</span><button class="tp_btn" t-on-click="onClickSaleQuotation">New</button></div>
                             <div class="tp_count_big" t-on-click="onClickSaleQuotation"><t t-esc="state.data.quotation or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_purple" t-attf-style="width: #{this.pct(state.data.quotation, state.data.total)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.quotation, state.data.total)"/>% of total</div>
                             <div class="tp_stat_row tp_mt8"><span class="tp_sl">Sent</span><span class="tp_sv" t-on-click="onClickSaleSent"><t t-esc="state.data.sent or 0"/></span></div>
                         </div>
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">Sales Orders</span><button class="tp_btn" t-on-click="onClickSaleConfirmed">Open</button></div>
                             <div class="tp_count_big tp_orange" t-on-click="onClickSaleConfirmed"><t t-esc="state.data.sale or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_orange" t-attf-style="width: #{this.pct(state.data.sale, state.data.total)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.sale, state.data.total)"/>% of total</div>
                             <div class="tp_stat_row tp_mt8"><span class="tp_sl">Amount</span><span class="tp_sv"><t t-esc="this.fmt(state.data.confirmed_amount, state.data.currency_symbol)"/></span></div>
                         </div>
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">To Invoice</span><button class="tp_btn" t-on-click="onClickSaleToInvoice">Open</button></div>
                             <div class="tp_count_big tp_red" t-on-click="onClickSaleToInvoice"><t t-esc="state.data.to_invoice or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_red" t-attf-style="width: #{this.pct(state.data.to_invoice, state.data.sale)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.to_invoice, state.data.sale)"/>% of confirmed</div>
                             <div class="tp_card_sub">Pending invoicing</div>
                         </div>
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">Locked</span><button class="tp_btn tp_btn_secondary" t-on-click="onClickSaleDone">Open</button></div>
                             <div class="tp_count_big tp_green" t-on-click="onClickSaleDone"><t t-esc="state.data.done or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_green" t-attf-style="width: #{this.pct(state.data.done, state.data.total)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.done, state.data.total)"/>% of total</div>
                             <div class="tp_card_sub">Sales Orders</div>
                         </div>
                     </div>
@@ -241,21 +273,37 @@
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">RFQ</span><button class="tp_btn" t-on-click="onClickPurchaseDraft">New</button></div>
                             <div class="tp_count_big" t-on-click="onClickPurchaseDraft"><t t-esc="state.data.draft or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_purple" t-attf-style="width: #{this.pct(state.data.draft, state.data.total)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.draft, state.data.total)"/>% of total</div>
                             <div class="tp_stat_row tp_mt8"><span class="tp_sl">Sent</span><span class="tp_sv" t-on-click="onClickPurchaseSent"><t t-esc="state.data.sent or 0"/></span></div>
                         </div>
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">Purchase Orders</span><button class="tp_btn" t-on-click="onClickPurchaseConfirmed">Open</button></div>
                             <div class="tp_count_big tp_orange" t-on-click="onClickPurchaseConfirmed"><t t-esc="state.data.purchase or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_orange" t-attf-style="width: #{this.pct(state.data.purchase, state.data.total)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.purchase, state.data.total)"/>% of total</div>
                             <div class="tp_stat_row tp_mt8"><span class="tp_sl">Amount</span><span class="tp_sv"><t t-esc="this.fmt(state.data.confirmed_amount, state.data.currency_symbol)"/></span></div>
                         </div>
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">To Bill</span><button class="tp_btn" t-on-click="onClickPurchaseToBill">Open</button></div>
                             <div class="tp_count_big tp_red" t-on-click="onClickPurchaseToBill"><t t-esc="state.data.to_bill or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_red" t-attf-style="width: #{this.pct(state.data.to_bill, state.data.purchase)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.to_bill, state.data.purchase)"/>% of confirmed</div>
                             <div class="tp_card_sub">Pending billing</div>
                         </div>
                         <div class="tp_card">
                             <div class="tp_card_header_row"><span class="tp_card_title">Done</span><button class="tp_btn tp_btn_secondary" t-on-click="onClickPurchaseDone">Open</button></div>
                             <div class="tp_count_big tp_green" t-on-click="onClickPurchaseDone"><t t-esc="state.data.done or 0"/></div>
+                            <div class="tp_mini_bar_wrap">
+                                <div class="tp_mini_bar tp_mini_green" t-attf-style="width: #{this.pct(state.data.done, state.data.total)}%"/>
+                            </div>
+                            <div class="tp_mini_pct"><t t-esc="this.pct(state.data.done, state.data.total)"/>% of total</div>
                             <div class="tp_card_sub">Purchase Orders</div>
                         </div>
                     </div>

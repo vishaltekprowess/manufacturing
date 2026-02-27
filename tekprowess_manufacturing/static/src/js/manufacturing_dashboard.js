@@ -271,6 +271,12 @@ export class ManufacturingDashboard extends Component {
     openSaleOrder(id) { this.action.doAction({ type: "ir.actions.act_window", res_model: "sale.order", res_id: id, views: [[false, "form"]], target: "current" }); }
     openPurchaseOrder(id) { this.action.doAction({ type: "ir.actions.act_window", res_model: "purchase.order", res_id: id, views: [[false, "form"]], target: "current" }); }
 
+    // Percentage of total
+    pct(count, total) {
+        if (!total || !count) return 0;
+        return Math.round((count / total) * 100);
+    }
+
     // Format
     fmt(amount, symbol) {
         if (!amount) return (symbol || "$") + " 0.00";

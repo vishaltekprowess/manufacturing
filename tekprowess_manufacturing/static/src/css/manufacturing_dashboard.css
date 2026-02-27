@@ -166,22 +166,22 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 2px;
 }
 
 .tp_card_title {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     color: #1a1f36;
 }
 
 .tp_count_big {
-    font-size: 32px;
+    font-size: 44px;
     font-weight: 800;
     color: #1a1f36;
     cursor: pointer;
     transition: color 0.15s;
-    margin-top: 12px;
+    margin-top: 2px;
     margin-bottom: 4px;
 }
 
@@ -554,4 +554,48 @@
 
 .tp_btn_secondary:hover {
     background: #d9cce4;
+}
+
+/* ── Mini proportion bar (state cards empty space filler) ── */
+.tp_mini_bar_wrap {
+    height: 5px;
+    background: #e9ecef;
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 12px 0 4px;
+    width: 100%;
+}
+
+.tp_mini_bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+    min-width: 2px;
+}
+
+.tp_mini_purple {
+    background: linear-gradient(90deg, #875a7b, #bb92ac);
+}
+
+.tp_mini_blue {
+    background: linear-gradient(90deg, #47a0c6, #7ec4df);
+}
+
+.tp_mini_orange {
+    background: linear-gradient(90deg, #e67e22, #f0a960);
+}
+
+.tp_mini_red {
+    background: linear-gradient(90deg, #e74c3c, #f07b73);
+}
+
+.tp_mini_green {
+    background: linear-gradient(90deg, #27ae60, #5cd18c);
+}
+
+.tp_mini_pct {
+    font-size: 15px;
+    color: #adb5bd;
+    font-weight: 500;
+    margin-bottom: 4px;
 }
