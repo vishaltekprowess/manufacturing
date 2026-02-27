@@ -1,7 +1,6 @@
 /** @odoo-module **/
 
 import { registry } from "@web/core/registry";
-import { Layout } from "@web/search/layout";
 import { Component, onWillStart, onMounted, onPatched, onWillUnmount, useState, useRef } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
@@ -12,7 +11,7 @@ import { useService } from "@web/core/utils/hooks";
  */
 export class ManufacturingDashboard extends Component {
     static template = "tekprowess_manufacturing.ManufacturingDashboard";
-    static components = { Layout };
+    static components = {};
 
     setup() {
         this.orm = useService("orm");

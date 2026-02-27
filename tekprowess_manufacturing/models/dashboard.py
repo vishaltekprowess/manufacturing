@@ -3,6 +3,7 @@
 from odoo import models, api, fields
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
+from collections import defaultdict
 
 
 class TekprowessManufacturingDashboard(models.TransientModel):
@@ -165,7 +166,6 @@ class TekprowessManufacturingDashboard(models.TransientModel):
         avg_order_val = round(confirmed_amount / len(confirmed_orders), 2) if confirmed_orders else 0.0
 
         # Top 5 customers by order total
-        from collections import defaultdict
         customer_totals = defaultdict(float)
         for o in confirmed_orders:
             customer_totals[o.partner_id.name or 'Unknown'] += o.amount_total
@@ -263,7 +263,6 @@ class TekprowessManufacturingDashboard(models.TransientModel):
         avg_order_val = round(confirmed_amount / len(confirmed_orders), 2) if confirmed_orders else 0.0
 
         # Top 5 vendors by purchase total
-        from collections import defaultdict
         vendor_totals = defaultdict(float)
         for o in confirmed_orders:
             vendor_totals[o.partner_id.name or 'Unknown'] += o.amount_total
