@@ -449,7 +449,7 @@ class TekprowessManufacturingDashboard(models.TransientModel):
             if j.kanban_dashboard_graph:
                 try:
                     graph_data = json.loads(j.kanban_dashboard_graph)
-                    name = f"{j.name} ({j.company_id.name})" if len(self.env.companies) > 1 else j.name
+                    name = f"{j.name} ({j.company_id.name or 'Unknown'})" if len(self.env.companies) > 1 else j.name
                     journal_graphs.append({
                         'id': j.id,
                         'name': name,
