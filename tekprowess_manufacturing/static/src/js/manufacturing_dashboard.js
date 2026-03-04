@@ -73,6 +73,7 @@ export class ManufacturingDashboard extends Component {
             manufacturing: "get_manufacturing_data",
             sales: "get_sales_data",
             purchase: "get_purchase_data",
+            accounting: "get_accounting_data",
         };
         const method = methodMap[this.section] || "get_manufacturing_data";
         try {
@@ -92,6 +93,8 @@ export class ManufacturingDashboard extends Component {
 
     async refresh() {
         if (this._chart) { this._chart.destroy(); this._chart = null; }
+        if (this._journalCharts) { this._journalCharts.forEach(c => c.destroy()); }
+        this._journalCharts = [];
         this._chartsRendered = false;
         await this._loadData();
     }
@@ -107,6 +110,8 @@ export class ManufacturingDashboard extends Component {
         const canvas = this.chartRef.el;
         if (!canvas) return;
         if (this._chart) { this._chart.destroy(); this._chart = null; }
+        if (this._journalCharts) { this._journalCharts.forEach(c => c.destroy()); }
+        this._journalCharts = [];
 
         const d = this.state.data;
 
@@ -194,6 +199,90 @@ export class ManufacturingDashboard extends Component {
                 },
                 options: this._dualAxisOptions(),
             });
+        } else if (this.section === "accounting") {
+            this._chart = new Chart(canvas, {
+                type: "bar",
+                data: {
+                    labels: d.chart_labels || [],
+                    datasets: [
+                        {
+                            label: "Invoices",
+                            data: d.chart_inv_amount || [],
+                            backgroundColor: "rgba(39, 174, 96, 0.70)",
+                            borderRadius: 4,
+                            categoryPercentage: 0.7,
+                            yAxisID: "y",
+                        },
+                        {
+                            label: "Bills",
+                            data: d.chart_bill_amount || [],
+                            backgroundColor: "rgba(231, 76, 60, 0.60)",
+                            borderRadius: 4,
+                            categoryPercentage: 0.7,
+                            yAxisID: "y",
+                        },
+                        {
+                            label: "Invoice Count",
+                            data: d.chart_inv_count || [],
+                            type: "line",
+                            borderColor: "rgba(71, 160, 198, 0.9)",
+                            backgroundColor: "rgba(71, 160, 198, 0.1)",
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 3,
+                            yAxisID: "y1",
+                        },
+                    ],
+                },
+                options: this._dualAxisOptions(),
+            });
+
+            // Native Journal Graphs (Bank, Cash, Sale, Purchase)
+            if (d.journal_graphs && d.journal_graphs.length) {
+                setTimeout(() => {
+                    d.journal_graphs.forEach(jg => {
+                        const jCanvas = document.getElementById("journal_chart_" + jg.id);
+                        if (!jCanvas || !jg.graph_data || !jg.graph_data.length) return;
+
+                        const pdata = jg.graph_data[0].values;
+                        const isBar = (jg.type === "sale" || jg.type === "purchase");
+                        const color = jg.type === "sale" ? "#27ae60" :
+                            jg.type === "purchase" ? "#e74c3c" : "#875a7b";
+
+                        const lbls = pdata.map(v => isBar ? v.label : v.x);
+                        const vals = pdata.map(v => isBar ? v.value : v.y);
+
+                        const chart = new Chart(jCanvas, {
+                            type: isBar ? "bar" : "line",
+                            data: {
+                                labels: lbls,
+                                datasets: [{
+                                    label: jg.name,
+                                    data: vals,
+                                    backgroundColor: isBar ? color : "rgba(135, 90, 123, 0.1)",
+                                    borderColor: color,
+                                    borderWidth: 2,
+                                    fill: !isBar,
+                                    tension: isBar ? 0 : 0.4,
+                                    borderRadius: isBar ? 4 : 0,
+                                    pointRadius: isBar ? 0 : 2,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+                                    y: { display: false }
+                                },
+                                animation: { duration: 500 }
+                            }
+                        });
+                        this._journalCharts.push(chart);
+                    });
+                }, 100);
+            }
         }
     }
 
@@ -242,6 +331,19 @@ export class ManufacturingDashboard extends Component {
             domain: domain,
         });
     }
+
+    // Accounting / Invoices
+    onClickInvoiceAll() { this._open("account.move", [["move_type", "=", "out_invoice"], ["state", "!=", "cancel"]], "Customer Invoices"); }
+    onClickInvoiceDraft() { this._open("account.move", [["move_type", "=", "out_invoice"], ["state", "=", "draft"]], "Draft Invoices"); }
+    onClickInvoicePosted() { this._open("account.move", [["move_type", "=", "out_invoice"], ["state", "=", "posted"]], "Posted Invoices"); }
+    onClickInvoicePaid() { this._open("account.move", [["move_type", "=", "out_invoice"], ["state", "=", "posted"], ["payment_state", "=", "paid"]], "Paid Invoices"); }
+    onClickInvoiceOverdue() { this._open("account.move", [["move_type", "=", "out_invoice"], ["state", "=", "posted"], ["payment_state", "not in", ["paid", "in_payment"]], ["invoice_date_due", "<", new Date().toISOString().split('T')[0]]], "Overdue Invoices"); }
+    onClickInvoiceToPay() { this._open("account.move", [["move_type", "=", "out_invoice"], ["state", "=", "posted"], ["payment_state", "not in", ["paid", "in_payment"]]], "To Collect"); }
+    onClickBillAll() { this._open("account.move", [["move_type", "=", "in_invoice"], ["state", "!=", "cancel"]], "Vendor Bills"); }
+    onClickBillDraft() { this._open("account.move", [["move_type", "=", "in_invoice"], ["state", "=", "draft"]], "Draft Bills"); }
+    onClickBillPosted() { this._open("account.move", [["move_type", "=", "in_invoice"], ["state", "=", "posted"]], "Posted Bills"); }
+    onClickBillOverdue() { this._open("account.move", [["move_type", "=", "in_invoice"], ["state", "=", "posted"], ["payment_state", "not in", ["paid", "in_payment"]], ["invoice_date_due", "<", new Date().toISOString().split('T')[0]]], "Overdue Bills"); }
+    openInvoice(id) { this.action.doAction({ type: "ir.actions.act_window", res_model: "account.move", res_id: id, views: [[false, "form"]], target: "current" }); }
 
     // Manufacturing
     onClickMfgAll() { this._open("mrp.production", [], "Manufacturing Orders"); }

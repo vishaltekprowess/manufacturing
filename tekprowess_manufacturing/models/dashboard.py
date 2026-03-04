@@ -4,6 +4,7 @@ from odoo import models, api, fields
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 from collections import defaultdict
+import json
 
 
 class TekprowessManufacturingDashboard(models.TransientModel):
@@ -319,3 +320,173 @@ class TekprowessManufacturingDashboard(models.TransientModel):
             'recent_orders': recent,
             'top_vendors': [{'name': k, 'amount': v} for k, v in top_vendors],
         }
+
+    # -------------------------------------------------------------------------
+    # Accounting / Invoice KPIs
+    # -------------------------------------------------------------------------
+
+    @api.model
+    def get_accounting_data(self):
+        Move = self.env['account.move']
+        today = date.today()
+        currency_symbol = self.env.company.currency_id.symbol or '$'
+
+        # ── Customer Invoices ──────────────────────────────────────────────
+        inv_domain = [('move_type', '=', 'out_invoice'), ('state', '!=', 'cancel')]
+        inv_total      = Move.search_count(inv_domain)
+        inv_draft      = Move.search_count(inv_domain + [('state', '=', 'draft')])
+        inv_posted     = Move.search_count(inv_domain + [('state', '=', 'posted')])
+        inv_paid       = Move.search_count(inv_domain + [('state', '=', 'posted'), ('payment_state', '=', 'paid')])
+        inv_overdue    = Move.search_count(inv_domain + [
+            ('state', '=', 'posted'),
+            ('payment_state', 'not in', ['paid', 'in_payment']),
+            ('invoice_date_due', '<', today),
+        ])
+        inv_to_pay     = Move.search_count(inv_domain + [
+            ('state', '=', 'posted'),
+            ('payment_state', 'not in', ['paid', 'in_payment']),
+        ])
+
+        # Total receivable (unpaid posted invoices)
+        posted_inv = Move.search(inv_domain + [
+            ('state', '=', 'posted'),
+            ('payment_state', 'not in', ['paid', 'in_payment']),
+        ])
+        total_receivable = sum(posted_inv.mapped('amount_residual'))
+
+        # ── Vendor Bills ───────────────────────────────────────────────────
+        bill_domain = [('move_type', '=', 'in_invoice'), ('state', '!=', 'cancel')]
+        bill_total   = Move.search_count(bill_domain)
+        bill_draft   = Move.search_count(bill_domain + [('state', '=', 'draft')])
+        bill_posted  = Move.search_count(bill_domain + [('state', '=', 'posted')])
+        bill_paid    = Move.search_count(bill_domain + [('state', '=', 'posted'), ('payment_state', '=', 'paid')])
+        bill_overdue = Move.search_count(bill_domain + [
+            ('state', '=', 'posted'),
+            ('payment_state', 'not in', ['paid', 'in_payment']),
+            ('invoice_date_due', '<', today),
+        ])
+
+        posted_bills = Move.search(bill_domain + [
+            ('state', '=', 'posted'),
+            ('payment_state', 'not in', ['paid', 'in_payment']),
+        ])
+        total_payable = sum(posted_bills.mapped('amount_residual'))
+
+        # ── This month invoiced ────────────────────────────────────────────
+        month_start = today.replace(day=1)
+        month_end   = (month_start + relativedelta(months=1)) - timedelta(days=1)
+        month_inv   = Move.search(inv_domain + [
+            ('state', '=', 'posted'),
+            ('invoice_date', '>=', str(month_start)),
+            ('invoice_date', '<=', str(month_end)),
+        ])
+        month_invoiced = sum(month_inv.mapped('amount_total'))
+        month_inv_count = len(month_inv)
+
+        # ── 6-month chart ──────────────────────────────────────────────────
+        months = self._get_month_labels(6)
+        chart_labels = [m['label'] for m in months]
+        chart_inv_amount = []
+        chart_bill_amount = []
+        chart_inv_count = []
+
+        for m in months:
+            inv_m = Move.search(inv_domain + [
+                ('state', '=', 'posted'),
+                ('invoice_date', '>=', m['start'].date()),
+                ('invoice_date', '<=', m['end'].date()),
+            ])
+            bill_m = Move.search(bill_domain + [
+                ('state', '=', 'posted'),
+                ('invoice_date', '>=', m['start'].date()),
+                ('invoice_date', '<=', m['end'].date()),
+            ])
+            chart_inv_amount.append(round(sum(inv_m.mapped('amount_total')), 2))
+            chart_bill_amount.append(round(sum(bill_m.mapped('amount_total')), 2))
+            chart_inv_count.append(len(inv_m))
+
+        # ── Recent customer invoices ───────────────────────────────────────
+        recent_moves = Move.search(
+            inv_domain + [('state', 'in', ['draft', 'posted'])],
+            order='invoice_date desc, id desc', limit=10
+        )
+        recent = []
+        state_labels = {'draft': 'Draft', 'posted': 'Posted', 'cancel': 'Cancelled'}
+        pay_labels = {
+            'not_paid': 'Not Paid', 'in_payment': 'In Payment',
+            'paid': 'Paid', 'partial': 'Partial',
+        }
+        for m in recent_moves:
+            recent.append({
+                'id': m.id,
+                'name': m.name or '/',
+                'partner': m.partner_id.name or '',
+                'amount': round(m.amount_total, 2),
+                'date': str(m.invoice_date or ''),
+                'due': str(m.invoice_date_due or ''),
+                'state': m.state,
+                'state_label': state_labels.get(m.state, m.state),
+                'pay_state': m.payment_state,
+                'pay_label': pay_labels.get(m.payment_state, m.payment_state),
+                'overdue': bool(
+                    m.state == 'posted'
+                    and m.payment_state not in ('paid', 'in_payment')
+                    and m.invoice_date_due
+                    and m.invoice_date_due < today
+                ),
+            })
+
+        # ── Top 5 customers by receivable ─────────────────────────────────
+        customer_totals = defaultdict(float)
+        for m in posted_inv:
+            customer_totals[m.partner_id.name or 'Unknown'] += m.amount_residual
+        top_customers = sorted(customer_totals.items(), key=lambda x: x[1], reverse=True)[:5]
+
+        # ── Odoo Native Journal Graphs ────────────────────────────────────
+        journals = self.env['account.journal'].search([('type', 'in', ('sale', 'purchase', 'bank', 'cash'))])
+        journal_graphs = []
+        for j in journals:
+            if j.kanban_dashboard_graph:
+                try:
+                    graph_data = json.loads(j.kanban_dashboard_graph)
+                    journal_graphs.append({
+                        'id': j.id,
+                        'name': j.name,
+                        'type': j.type,
+                        'graph_data': graph_data
+                    })
+                except Exception:
+                    pass
+
+        return {
+            # Invoice state counts
+            'inv_total': inv_total,
+            'inv_draft': inv_draft,
+            'inv_posted': inv_posted,
+            'inv_paid': inv_paid,
+            'inv_overdue': inv_overdue,
+            'inv_to_pay': inv_to_pay,
+            # Bill state counts
+            'bill_total': bill_total,
+            'bill_draft': bill_draft,
+            'bill_posted': bill_posted,
+            'bill_paid': bill_paid,
+            'bill_overdue': bill_overdue,
+            # Summary amounts
+            'total_receivable': round(total_receivable, 2),
+            'total_payable': round(total_payable, 2),
+            'net_balance': round(total_receivable - total_payable, 2),
+            'month_invoiced': round(month_invoiced, 2),
+            'month_inv_count': month_inv_count,
+            # Chart
+            'chart_labels': chart_labels,
+            'chart_inv_amount': chart_inv_amount,
+            'chart_bill_amount': chart_bill_amount,
+            'chart_inv_count': chart_inv_count,
+            # Lists
+            'recent_invoices': recent,
+            'top_customers': [{'name': k, 'amount': round(v, 2)} for k, v in top_customers],
+            'journal_graphs': journal_graphs,
+            'currency_symbol': currency_symbol,
+        }
+

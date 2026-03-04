@@ -117,6 +117,10 @@
     border-left: 4px solid #e67e22;
 }
 
+.tp_card_green {
+    border-left: 4px solid #27ae60;
+}
+
 .tp_card_top {
     display: flex;
     justify-content: space-between;
@@ -515,6 +519,27 @@
     font-size: 11px;
     color: #6c757d;
     font-weight: 600;
+}
+
+/* ── Invoice payment status badges ── */
+.tp_badge_acc_paid {
+    background: #d1e7dd;
+    color: #0a5c36;
+}
+
+.tp_badge_acc_not_paid {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.tp_badge_acc_in_payment {
+    background: #cff4fc;
+    color: #0a7fa3;
+}
+
+.tp_badge_acc_partial {
+    background: #f8d7da;
+    color: #842029;
 }
 
 /* ── Colour helpers ── */

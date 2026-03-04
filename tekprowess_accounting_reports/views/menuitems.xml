@@ -6,11 +6,11 @@
               parent="account.menu_finance_reports"
               sequence="10"/>
 
-    <!-- Dashboard Menu -->
+    <!-- Dashboard Menu — now points to tekprowess_manufacturing accounting dashboard -->
     <menuitem id="menu_tekprowess_dashboard"
               name="Dashboard"
               parent="account.menu_finance"
-              action="account.open_account_journal_dashboard_kanban"
+              action="tekprowess_manufacturing.action_tekprowess_accounting_dashboard"
               sequence="0"/>
 
     <!-- Wizard Menu Item -->
