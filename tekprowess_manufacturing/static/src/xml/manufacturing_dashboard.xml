@@ -422,9 +422,9 @@
                         <div class="tp_section_header tp_mt16">
                             <i class="fa fa-pie-chart me-2"/>Journals Overview
                         </div>
-                        <div class="tp_cards_row" style="flex-wrap: wrap;">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
                             <t t-foreach="state.data.journal_graphs" t-as="jg" t-key="jg.id">
-                                <div class="tp_card" style="min-width: 250px; margin-bottom: 14px;">
+                                <div class="tp_card">
                                     <div class="tp_card_header_row">
                                         <span class="tp_card_title"><t t-esc="jg.name"/></span>
                                     </div>
@@ -525,6 +525,64 @@
                     </div>
 
                 </t><!-- end accounting section -->
+
+                <!-- ═══════════════════════════════════════════
+                     INVENTORY SECTION
+                ════════════════════════════════════════════ -->
+                <t t-if="this.section === 'inventory'">
+                    
+                    <div class="tp_section_header">
+                        <i class="fa fa-cubes me-2"/>Inventory Overview
+                        <button class="tp_refresh_btn ms-auto" t-on-click="() => this.refresh()">
+                            <i class="fa fa-refresh me-1"/> Refresh
+                        </button>
+                    </div>
+
+                    <!-- KPI Tiles -->
+                    <div class="tp_kpi_row mt-2">
+                        <div class="tp_kpi_tile tp_kpi_blue"><div class="tp_kpi_icon"><i class="fa fa-cubes"/></div><div class="tp_kpi_val"><t t-esc="state.data.total_transfers or 0"/></div><div class="tp_kpi_label">Total Transfers</div></div>
+                        <div class="tp_kpi_tile tp_kpi_orange"><div class="tp_kpi_icon"><i class="fa fa-clock-o"/></div><div class="tp_kpi_val"><t t-esc="state.data.draft_transfers or 0"/></div><div class="tp_kpi_label">Draft Transfers</div></div>
+                        <div class="tp_kpi_tile tp_kpi_red"><div class="tp_kpi_icon"><i class="fa fa-exclamation-circle"/></div><div class="tp_kpi_val"><t t-esc="state.data.late_transfers or 0"/></div><div class="tp_kpi_label">Late Transfers</div></div>
+                        <div class="tp_kpi_tile tp_kpi_green"><div class="tp_kpi_icon"><i class="fa fa-money"/></div><div class="tp_kpi_val tp_kpi_sm"><t t-esc="this.fmt(state.data.total_valuation, state.data.currency_symbol)"/></div><div class="tp_kpi_label">Inv. Valuation</div></div>
+                    </div>
+
+                    <!-- Operation Types Overview (Native Graphs) -->
+                    <t t-if="state.data.inventory_graphs and state.data.inventory_graphs.length">
+                        <div class="tp_section_header tp_mt16">
+                            <i class="fa fa-exchange me-2"/>Operation Types
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px;">
+                            <t t-foreach="state.data.inventory_graphs" t-as="jg" t-key="jg.id">
+                                <div class="tp_card">
+                                    <div class="tp_card_header_row" style="cursor: pointer;" t-on-click="() => this.onClickPickingAction(jg.id, 'get_stock_picking_action_picking_type')">
+                                        <span class="tp_card_title"><t t-esc="jg.name"/></span>
+                                        <i class="fa fa-ellipsis-v text-muted" />
+                                    </div>
+                                    <div class="tp_stat_row tp_mt8">
+                                        <t t-if="jg.count_ready > 0">
+                                            <t t-if="jg.code === 'incoming'"><button class="btn btn-primary btn-sm" t-on-click="() => this.onClickPickingAction(jg.id, 'get_action_picking_tree_ready')"><t t-esc="jg.count_ready"/> To Receive</button></t>
+                                            <t t-elif="jg.code === 'outgoing'"><button class="btn btn-primary btn-sm" t-on-click="() => this.onClickPickingAction(jg.id, 'get_action_picking_tree_ready')"><t t-esc="jg.count_ready"/> To Deliver</button></t>
+                                            <t t-else=""><button class="btn btn-primary btn-sm" t-on-click="() => this.onClickPickingAction(jg.id, 'get_action_picking_tree_ready')"><t t-esc="jg.count_ready"/> To Process</button></t>
+                                        </t>
+                                        <t t-else="">
+                                            <button class="btn btn-secondary btn-sm" t-on-click="() => this.onClickPickingAction(jg.id, 'get_stock_picking_action_picking_type')">Open</button>
+                                        </t>
+                                        
+                                        <div style="flex: 1; text-align: right; font-size: 0.9em;">
+                                            <t t-if="jg.count_waiting > 0"><div style="cursor: pointer;" t-on-click="() => this.onClickPickingAction(jg.id, 'get_action_picking_tree_waiting')">Waiting: <b class="ms-2"><t t-esc="jg.count_waiting"/></b></div></t>
+                                            <t t-if="jg.count_late > 0"><div style="cursor: pointer; color: #dc3545;" t-on-click="() => this.onClickPickingAction(jg.id, 'get_action_picking_tree_late')">Late: <b class="ms-2"><t t-esc="jg.count_late"/></b></div></t>
+                                            <t t-if="jg.count_backorders > 0"><div style="cursor: pointer; color: #f39c12;" t-on-click="() => this.onClickPickingAction(jg.id, 'get_action_picking_tree_backorder')">Backorders: <b class="ms-2"><t t-esc="jg.count_backorders"/></b></div></t>
+                                            <t t-if="jg.count_move_ready > 0"><div style="cursor: pointer;" t-on-click="() => this.onClickPickingAction(jg.id, 'get_action_picking_type_ready_moves')">Operations: <b class="ms-2"><t t-esc="jg.count_move_ready"/></b></div></t>
+                                        </div>
+                                    </div>
+                                    <div class="tp_chart_area" style="height: 120px; margin-top: 15px;">
+                                        <canvas t-att-id="'inventory_chart_' + jg.id"/>
+                                    </div>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </t><!-- end inventory section -->
 
             </t><!-- end loading check -->
                 </div><!-- end tp_dashboard_wrap -->

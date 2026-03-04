@@ -74,6 +74,7 @@ export class ManufacturingDashboard extends Component {
             sales: "get_sales_data",
             purchase: "get_purchase_data",
             accounting: "get_accounting_data",
+            inventory: "get_inventory_data",
         };
         const method = methodMap[this.section] || "get_manufacturing_data";
         try {
@@ -108,7 +109,8 @@ export class ManufacturingDashboard extends Component {
         const Chart = window.Chart;
         if (!Chart) return;
         const canvas = this.chartRef.el;
-        if (!canvas) return;
+        if (!canvas && this.section !== "inventory") return;
+
         if (this._chart) { this._chart.destroy(); this._chart = null; }
         if (this._journalCharts) { this._journalCharts.forEach(c => c.destroy()); }
         this._journalCharts = [];
@@ -283,6 +285,53 @@ export class ManufacturingDashboard extends Component {
                     });
                 }, 100);
             }
+        } else if (this.section === "inventory") {
+            // Inventory Native Picking Type Graphs
+            if (d.inventory_graphs && d.inventory_graphs.length) {
+                setTimeout(() => {
+                    d.inventory_graphs.forEach(jg => {
+                        const jCanvas = document.getElementById("inventory_chart_" + jg.id);
+                        if (!jCanvas || !jg.graph_data || !jg.graph_data.length) return;
+
+                        const pdata = jg.graph_data[0].values || [];
+                        const isBar = true; // Inventory graphs are always bars
+                        const color = jg.code === "incoming" ? "#27ae60" :
+                            jg.code === "outgoing" ? "#e74c3c" : "#714B67";
+
+                        const lbls = pdata.map(v => isBar ? v.label : v.x);
+                        const vals = pdata.map(v => isBar ? v.value : v.y);
+
+                        const chart = new Chart(jCanvas, {
+                            type: isBar ? "bar" : "line",
+                            data: {
+                                labels: lbls,
+                                datasets: [{
+                                    label: jg.name,
+                                    data: vals,
+                                    backgroundColor: isBar ? color : "rgba(135, 90, 123, 0.1)",
+                                    borderColor: color,
+                                    borderWidth: 2,
+                                    fill: !isBar,
+                                    tension: isBar ? 0 : 0.4,
+                                    borderRadius: isBar ? 4 : 0,
+                                    pointRadius: isBar ? 0 : 2,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: { legend: { display: false } },
+                                scales: {
+                                    x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+                                    y: { display: false }
+                                },
+                                animation: { duration: 500 }
+                            }
+                        });
+                        this._journalCharts.push(chart);
+                    });
+                }, 100);
+            }
         }
     }
 
@@ -383,6 +432,17 @@ export class ManufacturingDashboard extends Component {
     fmt(amount, symbol) {
         if (!amount) return (symbol || "$") + " 0.00";
         return (symbol || "$") + " " + new Intl.NumberFormat("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
+    }
+
+    async onClickPickingAction(pickingTypeId, methodName) {
+        try {
+            const action = await this.orm.call("stock.picking.type", methodName, [[pickingTypeId]], {});
+            if (action) {
+                this.action.doAction(action);
+            }
+        } catch (e) {
+            console.error("Action error:", e);
+        }
     }
 }
 

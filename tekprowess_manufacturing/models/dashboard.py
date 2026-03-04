@@ -491,3 +491,55 @@ class TekprowessManufacturingDashboard(models.TransientModel):
             'currency_symbol': currency_symbol,
         }
 
+    @api.model
+    def get_inventory_data(self):
+        """ Fetch data for Inventory overview dashboard (Receipts, Deliveries, etc.) """
+        picking_types = self.env['stock.picking.type'].search([])
+        inventory_graphs = []
+        
+        # Calculate overall inventory valuation (if stock.valuation.layer exists, else 0)
+        total_valuation = 0
+        if 'stock.valuation.layer' in self.env:
+            layers = self.env['stock.valuation.layer'].search([('company_id', 'in', self.env.companies.ids)])
+            total_valuation = sum(layers.mapped('value'))
+            
+        # Overall transfer counters
+        today = date.today()
+        Move = self.env['stock.picking']
+        domain = [('company_id', 'in', self.env.companies.ids), ('state', 'not in', ('cancel', 'done'))]
+        
+        total_transfers = Move.search_count(domain)
+        late_transfers = Move.search_count(domain + [('scheduled_date', '<', today)])
+        draft_transfers = Move.search_count([('company_id', 'in', self.env.companies.ids), ('state', '=', 'draft')])
+
+        for pt in picking_types:
+            graph_data = []
+            if pt.kanban_dashboard_graph:
+                try:
+                    graph_data = json.loads(pt.kanban_dashboard_graph)
+                except Exception:
+                    pass
+            
+            name = f"{pt.name} ({pt.company_id.name or 'Unknown'})" if len(self.env.companies) > 1 else pt.name
+            
+            inventory_graphs.append({
+                'id': pt.id,
+                'name': name,
+                'code': pt.code,
+                'count_ready': pt.count_picking_ready,
+                'count_waiting': pt.count_picking_waiting,
+                'count_late': pt.count_picking_late,
+                'count_backorders': pt.count_picking_backorders,
+                'count_move_ready': pt.count_move_ready,
+                'graph_data': graph_data
+            })
+            
+        currency = self.env.company.currency_id.symbol or '$'
+        return {
+            'inventory_graphs': inventory_graphs,
+            'total_valuation': round(total_valuation, 2),
+            'total_transfers': total_transfers,
+            'late_transfers': late_transfers,
+            'draft_transfers': draft_transfers,
+            'currency_symbol': currency,
+        }
