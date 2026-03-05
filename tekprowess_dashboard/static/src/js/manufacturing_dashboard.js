@@ -10,7 +10,7 @@ import { useService } from "@web/core/utils/hooks";
  * context passed by the client action.
  */
 export class ManufacturingDashboard extends Component {
-    static template = "tekprowess_manufacturing.ManufacturingDashboard";
+    static template = "tekprowess_dashboard.ManufacturingDashboard";
     static components = {};
 
     setup() {
@@ -79,7 +79,7 @@ export class ManufacturingDashboard extends Component {
         const method = methodMap[this.section] || "get_manufacturing_data";
         try {
             const result = await this.orm.call(
-                "tekprowess.manufacturing.dashboard",
+                "tekprowess.dashboard",
                 method,
                 [],
                 {}

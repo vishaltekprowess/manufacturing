@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
 
-    <t t-name="tekprowess_manufacturing.ManufacturingDashboard">
+    <t t-name="tekprowess_dashboard.ManufacturingDashboard">
         <div class="o_action">
             <div class="o_content">
                 <div class="tp_dashboard_wrap">

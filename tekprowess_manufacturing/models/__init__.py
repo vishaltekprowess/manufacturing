@@ -14,4 +14,3 @@ from . import stock_move
 from . import menu
 from . import mrp_maintenance_inheritance
 from . import stock_scrap
-from . import dashboard

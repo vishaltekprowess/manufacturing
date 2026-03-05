@@ -7,9 +7,85 @@ from collections import defaultdict
 import json
 
 
+import logging
+
+_logger = logging.getLogger(__name__)
+
+
 class TekprowessManufacturingDashboard(models.TransientModel):
-    _name = 'tekprowess.manufacturing.dashboard'
-    _description = 'Tekprowess Manufacturing Dashboard'
+    _name = 'tekprowess.dashboard'
+    _description = 'Tekprowess Dashboard'
+
+    # -------------------------------------------------------------------------
+    # Dynamic Menu Creation (called from data XML on every install/upgrade)
+    # -------------------------------------------------------------------------
+
+    @api.model
+    def _create_menus(self):
+        """Dynamically create dashboard menu items based on installed modules."""
+        IrModule = self.env['ir.module.module']
+        IrModelData = self.env['ir.model.data']
+
+        def _is_installed(module_name):
+            return bool(IrModule.search([
+                ('name', '=', module_name), ('state', '=', 'installed')
+            ], limit=1))
+
+        def _get_xmlid(xmlid_str):
+            try:
+                return self.env.ref(xmlid_str).id
+            except Exception:
+                return False
+
+        # (parent_menu_xmlid, action_xmlid, menu_name, sequence, data_name, override_xmlid)
+        menu_defs = []
+        if _is_installed('mrp'):
+            menu_defs.append(('mrp.menu_mrp_root', 'tekprowess_dashboard.action_tekprowess_mfg_dashboard', 'Dashboard', 0, 'menu_tekprowess_mfg_dashboard', None))
+        if _is_installed('sale'):
+            menu_defs.append(('sale.sale_menu_root', 'tekprowess_dashboard.action_tekprowess_sale_dashboard', 'Dashboard', 0, 'menu_tekprowess_sale_dashboard', None))
+        if _is_installed('purchase'):
+            menu_defs.append(('purchase.menu_purchase_root', 'tekprowess_dashboard.action_tekprowess_purchase_dashboard', 'Dashboard', 0, 'menu_tekprowess_purchase_dashboard', None))
+        if _is_installed('account'):
+            menu_defs.append(('account.menu_finance', 'tekprowess_dashboard.action_tekprowess_accounting_dashboard', 'Dashboard', 0, 'menu_tekprowess_accounting_dashboard', None))
+        if _is_installed('stock'):
+            menu_defs.append(('stock.menu_stock_root', 'tekprowess_dashboard.action_tekprowess_inventory_dashboard', 'Overview', 0, 'menu_tekprowess_inventory_dashboard', 'stock.stock_picking_type_menu'))
+
+        for parent_xmlid, action_xmlid, name, sequence, data_name, override_xmlid in menu_defs:
+            parent_id = _get_xmlid(parent_xmlid)
+            action_id = _get_xmlid(action_xmlid)
+            if not parent_id or not action_id:
+                continue
+
+            if override_xmlid:
+                existing_id = _get_xmlid(override_xmlid)
+                if existing_id:
+                    self.env['ir.ui.menu'].browse(existing_id).write({
+                        'action': 'ir.actions.client,%d' % action_id,
+                    })
+                    _logger.info("Dashboard: overrode menu %s", override_xmlid)
+                    continue
+
+            existing = IrModelData.search([
+                ('module', '=', 'tekprowess_dashboard'),
+                ('name', '=', data_name),
+            ], limit=1)
+            if existing:
+                continue
+
+            menu = self.env['ir.ui.menu'].create({
+                'name': name,
+                'parent_id': parent_id,
+                'action': 'ir.actions.client,%d' % action_id,
+                'sequence': sequence,
+            })
+            IrModelData.create({
+                'module': 'tekprowess_dashboard',
+                'name': data_name,
+                'model': 'ir.ui.menu',
+                'res_id': menu.id,
+                'noupdate': True,
+            })
+            _logger.info("Dashboard: created menu '%s' under %s", name, parent_xmlid)
 
     # -------------------------------------------------------------------------
     # Helpers
@@ -35,6 +111,8 @@ class TekprowessManufacturingDashboard(models.TransientModel):
 
     @api.model
     def get_manufacturing_data(self):
+        if 'mrp.production' not in self.env:
+            return {}
         MO = self.env['mrp.production']
 
         draft_count     = MO.search_count([('state', '=', 'draft')])
@@ -132,6 +210,8 @@ class TekprowessManufacturingDashboard(models.TransientModel):
 
     @api.model
     def get_sales_data(self):
+        if 'sale.order' not in self.env:
+            return {}
         SO = self.env['sale.order']
 
         quotation_count = SO.search_count([('state', '=', 'draft')])
@@ -230,6 +310,8 @@ class TekprowessManufacturingDashboard(models.TransientModel):
 
     @api.model
     def get_purchase_data(self):
+        if 'purchase.order' not in self.env:
+            return {}
         PO = self.env['purchase.order']
 
         draft_count    = PO.search_count([('state', '=', 'draft')])
@@ -327,6 +409,8 @@ class TekprowessManufacturingDashboard(models.TransientModel):
 
     @api.model
     def get_accounting_data(self):
+        if 'account.move' not in self.env:
+            return {}
         Move = self.env['account.move']
         today = date.today()
         currency_symbol = self.env.company.currency_id.symbol or '$'
@@ -494,6 +578,8 @@ class TekprowessManufacturingDashboard(models.TransientModel):
     @api.model
     def get_inventory_data(self):
         """ Fetch data for Inventory overview dashboard (Receipts, Deliveries, etc.) """
+        if 'stock.picking.type' not in self.env:
+            return {}
         picking_types = self.env['stock.picking.type'].search([])
         inventory_graphs = []
         
