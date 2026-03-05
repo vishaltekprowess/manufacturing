@@ -534,6 +534,37 @@ class TekprowessManufacturingDashboard(models.TransientModel):
                 'graph_data': graph_data
             })
             
+        # Recent Transfers
+        recent_pickings = Move.search(
+            [('company_id', 'in', self.env.companies.ids)], 
+            order='date desc', 
+            limit=7
+        )
+        recent_pickings_data = []
+        for p in recent_pickings:
+            recent_pickings_data.append({
+                'id': p.id,
+                'name': p.name,
+                'partner': p.partner_id.name or 'N/A',
+                'scheduled_date': p.scheduled_date.strftime('%Y-%m-%d') if p.scheduled_date else '',
+                'state': p.state,
+                'type': p.picking_type_id.name
+            })
+            
+        # Low Stock Alerts (Products with qty <= 0)
+        low_stock_products = self.env['product.product'].search(
+            [('is_storable', '=', True), ('qty_available', '<=', 0)], 
+            limit=6
+        )
+        low_stock_data = []
+        for product in low_stock_products:
+            low_stock_data.append({
+                'id': product.id,
+                'name': product.display_name,
+                'qty': product.qty_available,
+                'uom': product.uom_id.name
+            })
+            
         currency = self.env.company.currency_id.symbol or '$'
         return {
             'inventory_graphs': inventory_graphs,
@@ -542,4 +573,6 @@ class TekprowessManufacturingDashboard(models.TransientModel):
             'late_transfers': late_transfers,
             'draft_transfers': draft_transfers,
             'currency_symbol': currency,
+            'recent_transfers': recent_pickings_data,
+            'low_stock': low_stock_data
         }

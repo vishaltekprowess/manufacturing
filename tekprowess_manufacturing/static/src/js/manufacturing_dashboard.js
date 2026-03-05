@@ -417,6 +417,11 @@ export class ManufacturingDashboard extends Component {
     onClickPurchaseDone() { this._open("purchase.order", [["state", "=", "done"]], "Done Orders"); }
     onClickPurchaseToBill() { this._open("purchase.order", [["state", "in", ["purchase", "done"]], ["invoice_status", "=", "to invoice"]], "To Bill"); }
 
+    // Inventory
+    onClickTransferAll() { this._open("stock.picking", [], "Transfers"); }
+    openTransfer(id) { this.action.doAction({ type: "ir.actions.act_window", res_model: "stock.picking", res_id: id, views: [[false, "form"]], target: "current" }); }
+    openProduct(id) { this.action.doAction({ type: "ir.actions.act_window", res_model: "product.product", res_id: id, views: [[false, "form"]], target: "current" }); }
+
     // Open individual records
     openMfgOrder(id) { this.action.doAction({ type: "ir.actions.act_window", res_model: "mrp.production", res_id: id, views: [[false, "form"]], target: "current" }); }
     openSaleOrder(id) { this.action.doAction({ type: "ir.actions.act_window", res_model: "sale.order", res_id: id, views: [[false, "form"]], target: "current" }); }

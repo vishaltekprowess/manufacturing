@@ -582,6 +582,49 @@
                             </t>
                         </div>
                     </t>
+
+                    <!-- Recent transfers + low stock alerts -->
+                    <div class="tp_bottom_row mt-4">
+                        <div class="tp_table_card">
+                            <div class="tp_table_header">
+                                <span><i class="fa fa-list me-2"/>Recent Transfers</span>
+                                <button class="tp_btn" t-on-click="onClickTransferAll">View All</button>
+                            </div>
+                            <table class="tp_table">
+                                <thead><tr><th>Reference</th><th>Contact</th><th>Scheduled Date</th><th>Operation Type</th><th>Status</th></tr></thead>
+                                <tbody>
+                                    <t t-foreach="state.data.recent_transfers or []" t-as="row" t-key="row.id">
+                                        <tr t-on-click="() => this.openTransfer(row.id)" class="tp_table_row">
+                                            <td class="tp_td_name"><t t-esc="row.name"/></td>
+                                            <td><t t-esc="row.partner"/></td>
+                                            <td><t t-esc="row.scheduled_date"/></td>
+                                            <td><t t-esc="row.type"/></td>
+                                            <td>
+                                                <span t-attf-class="tp_badge tp_badge_#{row.state === 'done' ? 'green' : row.state === 'cancel' ? 'red' : 'purple'}">
+                                                    <t t-esc="row.state"/>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-if="!(state.data.recent_transfers and state.data.recent_transfers.length)">
+                                        <tr><td colspan="5" class="tp_no_data">No recent transfers found.</td></tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="tp_side_card" t-if="state.data.low_stock and state.data.low_stock.length">
+                            <div class="tp_table_header"><span><i class="fa fa-exclamation-triangle me-2 tp_red"/>Low Stock Alerts</span></div>
+                            <div class="tp_wc_list">
+                                <t t-foreach="state.data.low_stock or []" t-as="p" t-key="p.id">
+                                    <div class="tp_wc_item" style="cursor: pointer;" t-on-click="() => this.openProduct(p.id)">
+                                        <div class="tp_wc_name"><t t-esc="p.name"/></div>
+                                        <div class="tp_wc_pct tp_red"><t t-esc="p.qty"/> <t t-esc="p.uom"/></div>
+                                    </div>
+                                </t>
+                            </div>
+                        </div>
+                    </div>
+
                 </t><!-- end inventory section -->
 
             </t><!-- end loading check -->
