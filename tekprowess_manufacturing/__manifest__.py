@@ -22,6 +22,7 @@
         * Maintenance Integration
     """,
     'author': "Tekprowess",
+    'website': 'https://www.tekprowess.com',
     'category': 'Manufacturing',
     'version': '18.0.1.0.0',
     'depends': [

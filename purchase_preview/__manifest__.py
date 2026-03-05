@@ -9,7 +9,7 @@
         view the portal representation of the document.
     """,
     'author': 'Your Company',
-    'website': 'https://www.yourcompany.com',
+    'website': 'https://www.tekprowess.com',
     'depends': ['purchase', 'portal'],
     'data': [
         'security/ir.model.access.csv',
