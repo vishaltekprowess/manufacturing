@@ -246,22 +246,25 @@ export class ManufacturingDashboard extends Component {
                         const jCanvas = document.getElementById("journal_chart_" + jg.id);
                         if (!jCanvas || !jg.graph_data || !jg.graph_data.length) return;
 
-                        const pdata = jg.graph_data[0].values;
+                        const pdata = jg.graph_data[0].values || [];
+                        const isSample = jg.graph_data[0].is_sample_data || pdata.some(v => ["o_sample_data", "sample"].includes(v.type));
                         const isBar = (jg.type === "sale" || jg.type === "purchase");
-                        const color = jg.type === "sale" ? "#27ae60" :
-                            jg.type === "purchase" ? "#e74c3c" : "#875a7b";
+
+                        const color = isSample ? "#d3d3d3" : (jg.type === "sale" ? "#27ae60" :
+                            jg.type === "purchase" ? "#e74c3c" : "#875a7b");
 
                         const lbls = pdata.map(v => isBar ? v.label : v.x);
-                        const vals = pdata.map(v => isBar ? v.value : v.y);
+                        // Zero out random Odoo mock data so empty journals don't show fake values!
+                        const vals = pdata.map(v => isSample ? 0 : (isBar ? v.value : v.y));
 
                         const chart = new Chart(jCanvas, {
                             type: isBar ? "bar" : "line",
                             data: {
                                 labels: lbls,
                                 datasets: [{
-                                    label: jg.name,
+                                    label: jg.name + (isSample ? " (No Data)" : ""),
                                     data: vals,
-                                    backgroundColor: isBar ? color : "rgba(135, 90, 123, 0.1)",
+                                    backgroundColor: isBar ? color : (isSample ? "rgba(211, 211, 211, 0.2)" : "rgba(135, 90, 123, 0.1)"),
                                     borderColor: color,
                                     borderWidth: 2,
                                     fill: !isBar,
@@ -294,21 +297,24 @@ export class ManufacturingDashboard extends Component {
                         if (!jCanvas || !jg.graph_data || !jg.graph_data.length) return;
 
                         const pdata = jg.graph_data[0].values || [];
+                        const isSample = jg.graph_data[0].is_sample_data || pdata.some(v => ["o_sample_data", "sample"].includes(v.type));
                         const isBar = true; // Inventory graphs are always bars
-                        const color = jg.code === "incoming" ? "#27ae60" :
-                            jg.code === "outgoing" ? "#e74c3c" : "#714B67";
+
+                        const color = isSample ? "#d3d3d3" : (jg.code === "incoming" ? "#27ae60" :
+                            jg.code === "outgoing" ? "#e74c3c" : "#714B67");
 
                         const lbls = pdata.map(v => isBar ? v.label : v.x);
-                        const vals = pdata.map(v => isBar ? v.value : v.y);
+                        // Zero out random Odoo mock data
+                        const vals = pdata.map(v => isSample ? 0 : (isBar ? v.value : v.y));
 
                         const chart = new Chart(jCanvas, {
                             type: isBar ? "bar" : "line",
                             data: {
                                 labels: lbls,
                                 datasets: [{
-                                    label: jg.name,
+                                    label: jg.name + (isSample ? " (No Data)" : ""),
                                     data: vals,
-                                    backgroundColor: isBar ? color : "rgba(135, 90, 123, 0.1)",
+                                    backgroundColor: isBar ? color : (isSample ? "rgba(211, 211, 211, 0.2)" : "rgba(135, 90, 123, 0.1)"),
                                     borderColor: color,
                                     borderWidth: 2,
                                     fill: !isBar,
