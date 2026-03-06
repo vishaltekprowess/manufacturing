@@ -42,7 +42,8 @@
         'tekprowess_accounting_reports',
         'maintenance',
         'web_gantt',
-        'purchase_preview'
+        'purchase_preview',
+        'tekprowess_dashboard'
     ],
     'data': [
         # Security
